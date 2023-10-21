@@ -1,6 +1,6 @@
 public interface VirtualStore {
 
-    public void sayHi();
+    public String sayHi();
 
     public void options();
 

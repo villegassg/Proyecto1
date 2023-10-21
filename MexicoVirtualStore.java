@@ -11,9 +11,9 @@ public class MexicoVirtualStore implements VirtualStore {
         this.iterator = iterator;
     }
 
-    public void sayHi() {
-        System.out.println("¡Bienvenido a la Tienda Virtual Mexicana! " +
-                            "¡Tenemos muchísimas cosas para ofrecerte!\n");
+    public String sayHi() {
+        return "¡Bienvenido a la Tienda Virtual Mexicana! " +
+                            "¡Tenemos muchísimas cosas para ofrecerte!\n";
     }
 
     public void options() {

@@ -4,7 +4,7 @@ public interface ClientInterface {
 
     public String getUsername();
 
-    public String getPassword();
+    public int getPassword();
     
     public long getBankAccount();
 

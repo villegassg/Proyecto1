@@ -29,10 +29,11 @@ public class Product {
     }
 
     @Override public String toString() {
-        String s = "Name: " + name + "\n" +
-                    "Barcode: " + barcode + "\n" +
-                    "Department: " + department + "\n" +
-                    "Price : " + price + "\n";
-        return s;
+        String n = String.format("Name: %s\n", name);
+        String b = String.format("Barcode: %s\n", barcode);
+        String d = String.format("Department: %s\n", department);
+        String p = String.format("Price: %s\n", price);
+
+        return n.concat(b).concat(d).concat(p);
     }
 }

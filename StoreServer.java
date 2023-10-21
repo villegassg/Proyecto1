@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.lang.reflect.Proxy;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Iterator;
@@ -13,7 +14,7 @@ public class StoreServer {
     private LinkedList<Connection> connections;
     private boolean isRunning;
     private LinkedList<ServerListener> listeners;
-    private LinkedList<Client> clients;
+    private LinkedList<ProxyClient> clients;
 
     public StoreServer(int port) throws IOException {
         this.port = port;
@@ -54,25 +55,23 @@ public class StoreServer {
     }
 
     private void receivedMessage(Connection connection, String message) {
-        if(connection.isActive()) {
-            switch(message) {
-                case "DATABASEREQUESTED" : 
-                    databaseRequest(connection);
-                    break;
-                case "NEWCLIENTREQUEST" :
+        if (connection.isActive()) {
+            if (message.startsWith("DATABASEREQUESTED")) {
+                databaseRequest(connection);
 
-                    break;
-                case "DISCONNECT" :
-                    toDisconnect(connection);
-                    break;
-                case "STOPSERVICE" : 
-                    //stopService();
-                    break;
-                case "INVALID" :
-                    error(connection, message.toString());
-                    break;
-                default: 
-                    break;
+            } else if (message.startsWith("SIGNUP")) {
+                String client = message.substring("SIGNUP".length());
+                clientSignUp(connection, client);
+
+            } else if (message.startsWith("SIGNIN")) {
+                String client = message.substring("SIGNIN".length());
+                clientSignIn(connection, client);
+
+            } else if (message.startsWith("DISCONNECT")) {
+                toDisconnect(connection);
+
+            } else if (message.startsWith("INVALID")) {
+                error(connection, message.toString());
             }
         }
     }    
@@ -82,7 +81,7 @@ public class StoreServer {
         writeMessage("Database requested by port: %d", port);
         try{
             Iterator<Product> iterator = database.iterator();
-            connection.sendDatabase(iterator);
+            connection.sendDatabase(store, iterator);
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -108,12 +107,76 @@ public class StoreServer {
         writeMessage("The connection %d has been disconnected.\n", port);
     }
 
-    private void newClientRequest(String client) {
+    private void clientSignIn(Connection connection, String client) {
+        String u = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
+        String p = client.substring(client.indexOf("Password: ") + "Password: ".length(), client.indexOf("Phone number"));
+        for (ProxyClient c : clients)
+            if (c.getUsername().equals(u) && c.getPassword() == p.hashCode()) {
+                country(connection, c.getCountry());
+                return;
+            }
+        
+        try {
+            connection.sendMessage("INVALID".concat("You have not signed up yet.\n"));
+        } catch (IOException ioe) {}
+    }
+
+    private void clientSignUp(Connection connection, String client) {
+        String u = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
+        String p = client.substring(client.indexOf("Password: ") + "Password: ".length(), client.indexOf("Phone number"));
+        for (ProxyClient c : clients)
+            if (c.getUsername().equals(u) && c.getPassword() == p.hashCode()) {
+                try {
+                    connection.sendMessage("SIGNUP".concat("You've already signed up; " +
+                                        "creating the store according to your country anyway...\n"));
+                } catch (IOException ioe) {}
+                country(connection, c.getCountry());
+                databaseRequest(connection);
+                return;
+            }
+
+        String n = client.substring(client.indexOf("Name: ") + "Name: ".length(), client.indexOf("Username:"));
+        String pN = client.substring(client.indexOf("Phone number: ") + "Phone number: ".length(), client.indexOf("Address"));
+        String a = client.substring(client.indexOf("Address: ") + "Address: ".length(), client.indexOf("Bank"));
+        String b = client.substring(client.indexOf("Bank Account: ") + "Bank Account: ".length(), client.indexOf("Country"));
+        String c = client.substring(client.indexOf("Country: ") + "Country: ".length(), client.indexOf("Money"));
+        String m = client.substring(client.indexOf("Money: ") + "Money: ".length());
+
+        ProxyClient newClient = new ProxyClient(new Client(u, p, n, Long.parseLong(pN), a, 
+                                                Long.parseLong(b), c, Double.parseDouble(m)));
+        clients.add(newClient);
+        country(connection, c);
+        store.sayHi();
+        databaseRequest(connection);
+    }
+
+    private void country(Connection connection, String country) {
+        switch(country) {
+            case "México" :
+                store = new MexicoVirtualStore(database.iterator());
+                break;
+            case "España" : 
+                store = new SpainVirtualStore(database.iterator());
+                break;
+            case "United States" : 
+                store = new USAVirtualStore(database.iterator());
+                break;
+            default : 
+                try {
+                    connection.sendMessage("Invalid name for a country.\n");
+                } catch (IOException ioe) {
+                    System.out.println("Error while trying to notify the client that " +
+                                            "its country is not valid.\n");
+                }
+        }
+    }
+
+    private void storeManager(String country) {
 
     }
 
-    private void manageClient(String country) {
-
+    public VirtualStore getVirtualStore() {
+        return store;
     }
 
     private void writeMessage(String format, Object ... arguments) {

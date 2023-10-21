@@ -3,9 +3,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 
 public class Connection {
 
@@ -57,9 +54,12 @@ public class Connection {
         }
     }
 
-    public void sendDatabase(Iterator<Product> iterator) throws IOException {
+    public void sendDatabase(VirtualStore store, Iterator<Product> iterator) throws IOException {
+        out.write(store.sayHi() + "\n");
+        out.newLine();
+        out.flush();
         while(iterator.hasNext()) {
-            out.write(iterator.next().toString());
+            out.write("DATABASEREQUESTED".concat(iterator.next().toString()));
             out.newLine();
             out.flush();
         }

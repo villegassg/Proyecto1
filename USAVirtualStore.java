@@ -11,8 +11,8 @@ public class USAVirtualStore implements VirtualStore {
         this.iterator = iterator;
     }
 
-    public void sayHi() {
-        System.out.println("Welcome to USA Virtual Store! We're glad you're visiting us!\n");
+    public String sayHi() {
+        return "Welcome to USA Virtual Store! We're glad you're visiting us!\n";
     }
 
     public void options() {

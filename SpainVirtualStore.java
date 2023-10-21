@@ -11,8 +11,8 @@ public class SpainVirtualStore implements VirtualStore {
         this.iterator = iterator;
     }
 
-    public void sayHi() {
-        System.out.println("¡Enhorabuena! ¡Bienvenido seas a la Tienda Virtual de España!\n");
+    public String sayHi() {
+        return "¡Enhorabuena! ¡Bienvenido seas a la Tienda Virtual de España!\n";
     }
     
     public void options() {

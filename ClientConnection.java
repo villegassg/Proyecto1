@@ -6,10 +6,10 @@ import java.util.Scanner;
 public class ClientConnection {
     
     private Connection connection;
-    private Client client;
+    private ProxyClient client;
     private boolean isConnected;
 
-    public ClientConnection(Socket socket, Client client) {
+    public ClientConnection(Socket socket, ProxyClient client) {
         try {
             this.connection = new Connection(socket);
             connection.addListener((c, m) -> receivedMessage(c, m));
@@ -23,24 +23,22 @@ public class ClientConnection {
     }
 
     public void receivedMessage(Connection connection, String message) {
-        if (isConnected) {
-            switch(message) {
-                case "DATABASEREQUESTED" : 
-                    System.out.println("No se puede solicitar la base de datos al cliente.\n");
-                    break;
-                case "DATABASERECEIVED" : 
-                    break;
-                case "DISCONNECT" : 
-                    System.out.println("Thank you for your time! We hope you're visiting us again!\n");
-                    System.exit(0);
-                    break;
-                case "STOPSERVICE" : break;
-                case "INVALID" : 
-                    System.out.println("Invalid message received, now the connection is insecure and we have to finish it.\n");
-                    break;
-                default : 
-                    database(message);
-                    break;
+        if(isConnected) {
+            if (message.startsWith("SIGNUP")) {
+                System.out.println(message.substring("SIGNUP".length()));
+            } else if (message.startsWith("CONNECT")) {
+                connect();
+            } else if (message.startsWith("DISCONNECT")) {
+                System.out.println("Thank you for your time! We hope you're visiting us again!\n");
+                System.exit(0);
+            } else if (message.startsWith("INVALID")) {
+                System.out.println(message.substring("INVALID".length()));
+                System.out.println("Invalid message received, now the connection is insecure and we have to finish it.\n");
+                try {
+                    connection.sendMessage("INVALID");
+                } catch (IOException ioe) {}
+            } else {
+                System.out.println(message);
             }
         }
     }
@@ -69,6 +67,7 @@ public class ClientConnection {
             switch(action) {
                 case 1: 
                     try {
+                        connection.sendMessage("CLIENT".concat(client.toString()));
                         connection.sendMessage("DATABASEREQUESTED");
                     } catch (IOException ioe) {
                         ioe.printStackTrace();
@@ -96,5 +95,33 @@ public class ClientConnection {
             
         } while (true);
         scanner.close();
+    }
+
+    public void signIn() {
+        String signIn = "SIGNIN".concat(client.toString2());
+        
+        try {
+            connection.sendMessage(signIn);
+        } catch (IOException ioe) {
+            System.out.println("Could not sign in.\n");
+        }
+    }
+
+    public void signUp() {
+        try {
+            connection.sendMessage("SIGNUP".concat(client.toString2()));
+        } catch (IOException ioe) {
+            System.out.println("Could not sign up.\n");
+        }
+    }
+
+    private boolean clientRequest() {
+        try {
+            connection.sendMessage("CLIENTREQUEST");
+        } catch (IOException ioe) {
+            System.err.println("\nCould not enter the store for some reason :(\n");
+            return false;
+        }
+        return true;
     }
 }
