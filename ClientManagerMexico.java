@@ -41,7 +41,7 @@ public class ClientManagerMexico implements ClientManagerInterface {
                     try {
                         Socket socket = new Socket("localhost", 1234);
                         ProxyClient proxy = new ProxyClient(client);
-                        ClientConnection clientConnection = new ClientConnection(socket, proxy);
+                        ClientConnection clientConnection = new ClientConnection(in, socket, proxy);
                         clientConnection.signIn();
                     } catch (IOException ioe) {}
                     break;
@@ -50,7 +50,7 @@ public class ClientManagerMexico implements ClientManagerInterface {
                     try {
                         Socket socket = new Socket("localhost", 1234);
                         ProxyClient proxy = new ProxyClient(client);
-                        ClientConnection clientConnection = new ClientConnection(socket, proxy);
+                        ClientConnection clientConnection = new ClientConnection(in, socket, proxy);
                         clientConnection.signUp();
                     } catch (IOException ioe) {}
                     break;

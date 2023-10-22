@@ -1,15 +1,16 @@
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 
 public class ClientConnection {
     
     private Connection connection;
     private ProxyClient client;
     private boolean isConnected;
+    private ClientConnectionInterface clientConnection;
+    private BufferedReader in;
 
-    public ClientConnection(Socket socket, ProxyClient client) {
+    public ClientConnection(BufferedReader in, Socket socket, ProxyClient client) {
         try {
             this.connection = new Connection(socket);
             connection.addListener((c, m) -> receivedMessage(c, m));
@@ -20,6 +21,8 @@ public class ClientConnection {
             ioe.printStackTrace();
         }
         this.client = client;
+        this.in = in;
+        countryConnection(client.getCountry());
     }
 
     public void receivedMessage(Connection connection, String message) {
@@ -27,18 +30,18 @@ public class ClientConnection {
             if (message.startsWith("SIGNUP")) {
                 System.out.println(message.substring("SIGNUP".length()));
             } else if (message.startsWith("CONNECT")) {
-                connect();
+                clientConnection.connect(connection);
             } else if (message.startsWith("DATABASEREQUESTED")) {
                 database(message.substring("DATABASEREQUESTED".length()));
             } else if (message.startsWith("CATALOGUE")) {
                 database(message.substring("CATALOGUE".length()));
             } else if (message.startsWith("PURCHASEMODE")) {
-                System.out.println("Entering the purchase mode.\n");
+                clientConnection.purchaseMode();
             } else if (message.startsWith("OPTIONS")) {
                 String options = message.substring("OPTIONS".length());
                 options = options.replaceAll("\t", "\n");
                 System.out.println(options);
-                purchase();
+                clientConnection.purchase(connection);
             } else if (message.startsWith("ADDEDTOCART")) {
                 String success = message.substring("ADDEDTOCART".length());
                 System.out.println(success);
@@ -94,114 +97,16 @@ public class ClientConnection {
         System.out.println(message);
     }
 
-    private void purchase() {
-        Scanner scanner = new Scanner(System.in);
-        int action = -1;
-
-        try {
-            action = Integer.parseInt(scanner.next());
-        } catch (NumberFormatException nfe) {
-            System.out.println("NumberFormatException has ocurred. Please enter a valid action.\n");
-        } catch (NoSuchElementException nsee) {
-            
-        }
-        switch(action) {
-            case 1:
-                System.out.println("\nPlease enter the name of the product you'd like " +
-                                        "to add to your shopping cart: ");
-                String product1 = scanner.next();
-                try {
-                    connection.sendMessage("ADDTOCART" + client.toString2() + 
-                                            "Product: " + product1);
-                } catch(IOException ioe) {
-                    ioe.printStackTrace();
-                }
+    private void countryConnection(String country) {
+        switch(country) {
+            case "México": 
+                clientConnection = new ClientConnectionMexico(client, in);
                 break;
-            case 2:
-                System.out.println("\nPlease enter the name of the product you'd like " +
-                                        "to remove from your shopping cart: ");
-                String product2 = scanner.next();
-                try {
-                    connection.sendMessage("REMOVEFROMSHOPPINGCART" + 
-                                            client.toString2() +
-                                            "Product: " + product2);
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
+            case "USA" :
+                clientConnection = new ClientConnectionUSA(client, in);
                 break;
-            case 3: 
-                try {
-                    connection.sendMessage("PRINTSHOPPINGCART" + client.toString2());
-                } catch(IOException ioe) {}
-                break;
-            case 4: 
-                try {
-                    connection.sendMessage("PURCHASESHOPPINGCART" + client.toString2());
-                } catch(IOException ioe) {
-                    ioe.printStackTrace();
-                }
-                break;
-            case 5 :
-                System.out.println("\nPlease enter the name of the product you'd like to purchase directly: ");
-                String product3 = scanner.next();
-                try {
-                    connection.sendMessage("PURCHASE" + client.toString2() + 
-                                            "Product: " + product3);
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-                break;
-            case 6:
-                System.out.println("\nExiting from the purchase mode.\n");
-                try {
-                    connection.sendMessage("CONNECT");
-                } catch (IOException ioe) {}
-                break;
-        }
-            
-    }
-
-    public void connect() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("\nWhat would you like to do now?\n");
-        int action = -1;
-        
-        System.out.println("Actions to do with the server:\n" + 
-                            "1. Show Catalogue.\n" +
-                            "2. Purchase.\n" +
-                            "3. Disconnect.\n");
-        try {
-            action = Integer.parseInt(scanner.next());
-        } catch (NumberFormatException nfe) {
-            System.out.println("NumberFormatException has ocurred. Please enter a valid action.\n");
-        } catch (NoSuchElementException nsee) {
-            
-        }
-        switch(action) {
-            case 1: 
-                try {
-                    connection.sendMessage("CATALOGUE");
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-                break;
-            case 2: 
-                try {
-                    connection.sendMessage("PURCHASEMODE");
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-                break;
-            case 3: 
-                try {
-                    connection.sendMessage("DISCONNECT");
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-                break;
-            default :
-                System.out.println("Please enter a valid action.\n");
-                
+            case "España" :
+                clientConnection = new ClientConnectionSpain(client, in);
                 break;
         }
     }
