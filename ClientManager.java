@@ -1,13 +1,16 @@
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.net.Socket;
+import java.lang.NumberFormatException;
 
 public class ClientManager {
 
     public static void main(String[] args) {
         System.out.println("Welcome to the best online Store!\n Please enter the action you want to execute.\n");
-        Scanner scanner = new Scanner(System.in);
+        BufferedReader in = 
+            new BufferedReader(
+                new InputStreamReader(System.in));
         int action = -1;
         Client client = new Client();
 
@@ -17,18 +20,21 @@ public class ClientManager {
                                 "2. Sign up\n" +
                                 "0. Disconnect\n\n");
             try {
-                action = Integer.parseInt(scanner.next());
+                action = Integer.parseInt(in.readLine());
             } catch (NumberFormatException nfe) {
                 System.out.println("Please enter a valid number.\n");
                 continue;
-            } 
+            } catch (IOException ioe) {
+                System.out.println("We're sorry, an error ocurred.\n");
+                System.exit(0);
+            }
             switch(action) {
                 case 0 : 
                     System.out.println("Thank you for your time :). We hope you're visiting us again!\n");
                     System.exit(0);
                     break;
                 case 1 : 
-                    client = signIn(scanner);
+                    client = signIn(in);
                     try {
                         Socket socket = new Socket("localhost", 1234);
                         ProxyClient proxy = new ProxyClient(client);
@@ -38,7 +44,7 @@ public class ClientManager {
                     } catch (IOException ioe) {}
                     break;
                 case 2: 
-                    client = signUp(scanner);
+                    client = signUp(in);
                     try {
                         Socket socket = new Socket("localhost", 1234);
                         ProxyClient proxy = new ProxyClient(client);
@@ -57,14 +63,19 @@ public class ClientManager {
         //scanner.close();
     }
 
-    private static Client signIn(Scanner scanner) {
+    private static Client signIn(BufferedReader in) {
         String username = "";
         String password = "";
         
-        System.out.printf("\n\nPlease enter your username: ");
-        username = scanner.next();
-        System.out.printf("\n\nNow please enter your password: ");
-        password = scanner.next();
+        try {
+            System.out.printf("\n\nPlease enter your username: ");
+            username = in.readLine();
+            System.out.printf("\n\nNow please enter your password: ");
+            password = in.readLine();
+        } catch (IOException ioe) {
+            System.out.println("It has ocurred an error while trying to sign in. We're sorry.\n");
+            System.exit(1);
+        }
         
         Client nuevoCliente = new Client();
         nuevoCliente.setUsername(username);
@@ -72,7 +83,7 @@ public class ClientManager {
         return nuevoCliente;
     }
 
-    private static Client signUp(Scanner scanner) {
+    private static Client signUp(BufferedReader in) {
         String name = "";
         String username = "";
         String password = "";
@@ -82,29 +93,55 @@ public class ClientManager {
         String country = "";
         double money = 0;
         
-        System.out.printf("\n\nPlease enter your name (It doesn't need to be full name): ");
-        name = scanner.next();
-        System.out.printf("\n\nPlease enter your username: ");
-        username = scanner.next();
-        System.out.printf("\n\nPlease enter your password: ");
-        password = scanner.next();
-        System.out.println("\n\nPlease enter your phone number (Without spaces, hyphens, etc.): ");
-        phoneNumber = scanner.nextLong();
-        System.out.println("\n\nPlease enter your address");
-        address = scanner.next();
-        System.out.println("\n\nPlease enter your bank account (No spaces, hyphens, etc.): ");
-        bankAccount = scanner.nextLong();
-        while (true) {
-            System.out.println("\n\nPlease enter your country (México / United States / España): ");
-            country = scanner.next();
-            if (country.equals("México") || country.equals("Mexico") || 
-                country.equals("United States") || country.equals("USA") ||
-                country.equals("España")) 
-                break;
-            System.out.println("Invalid name for a country, please enter it with capital letter.");
-        }
-        System.out.println("\n\nPlease enter the money you would like to have in your account: ");
-        money = scanner.nextDouble();
+        try {
+            System.out.printf("\n\nPlease enter your name (It doesn't need to be full name): ");
+            name = in.readLine();
+            System.out.printf("\n\nPlease enter your username: ");
+            username = in.readLine();
+            System.out.printf("\n\nPlease enter your password: ");
+            password = in.readLine();
+            while(true) {
+                System.out.println("\n\nPlease enter your phone number (Without spaces, hyphens, etc.): ");
+                try {
+                    phoneNumber = Long.parseLong(in.readLine());
+                    break;
+                } catch (NumberFormatException nfe) {
+                    System.out.println("Please enter a valid phone number.\n");
+                }
+            }
+            System.out.println("\n\nPlease enter your address: ");
+            address = in.readLine();
+            while (true) {
+                System.out.println("\n\nPlease enter your bank account (No spaces, hyphens, etc.): ");
+                try {
+                    bankAccount = Long.parseLong(in.readLine());
+                    break;
+                } catch (NumberFormatException nfe) {
+                    System.out.println("Please enter a valid bank account.\n");
+                }
+            }
+            while (true) {
+                System.out.println("\n\nPlease enter your country (México / United States / España): ");
+                country = in.readLine();
+                if (country.equals("México") || country.equals("Mexico") || 
+                    country.equals("United States") || country.equals("USA") ||
+                    country.equals("España")) 
+                    break;
+                System.out.println("Invalid name for a country, please enter it with capital letter.");
+            }
+            while (true) {
+                System.out.println("\n\nPlease enter the money you would like to have in your account: ");
+                try {
+                    money = Double.parseDouble(in.readLine());
+                    break;
+                } catch (NumberFormatException nfe) {
+                    System.out.println("Please enter a valid amount of money.\n");
+                }
+            }
+        } catch (IOException ioe) {
+            System.out.println("It has ocurred an error while trying to sign up you. We're sorry.\n");
+            System.exit(1);
+        } 
 
         return new Client(username, password, name, phoneNumber, address, bankAccount, country, money);
     }

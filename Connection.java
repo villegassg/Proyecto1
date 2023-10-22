@@ -6,11 +6,9 @@ import java.util.LinkedList;
 
 public class Connection {
 
-    private Iterator<Product> iterator;
     private BufferedReader in;
     private BufferedWriter out;
     private Socket socket;
-    private ClientConnection clientConnection;
     private boolean isActive;
     private LinkedList<ConnectionListener> listeners;
 
@@ -50,12 +48,12 @@ public class Connection {
             out.flush();
         } catch (IOException ioe) {
             throw new IOException("It's been ocurred an error during the send of the " +
-                                    "message \"" + message.toString() + "\"");
+                                    "message \"" + message + "\"");
         }
     }
 
     public void sendDatabase(VirtualStore store, Iterator<Product> iterator) throws IOException {
-        out.write(store.sayHi() + "\n");
+        out.write(store.sayHi());
         out.newLine();
         out.flush();
         while(iterator.hasNext()) {
@@ -63,9 +61,6 @@ public class Connection {
             out.newLine();
             out.flush();
         }
-        
-        for (ConnectionListener listener : listeners) 
-                listener.receivedMessage(this, "DATABASERECEIVED");
     }
 
     public void disconect() {

@@ -2,9 +2,17 @@ public interface VirtualStore {
 
     public String sayHi();
 
-    public void options();
+    public String options();
 
-    public void purchase(Product product);
+    public void addToCart(Connection connection, String name, Product product);
+
+    public void removeFromCart(Connection connection, String name, Product product);
+
+    public void printShoppingCart(Connection connection, String name);
+
+    public void purchaseShoppingCart(Connection connection, String name);
+
+    public void purchase(Connection connection, String client, Product product);
 
     public String deliveryDate();
 

@@ -36,4 +36,13 @@ public class Product {
 
         return n.concat(b).concat(d).concat(p);
     }
+
+    public String toString2() {
+        String n = String.format("Name: %s\t", name);
+        String b = String.format("Barcode: %s\t", barcode);
+        String d = String.format("Department: %s\t", department);
+        String p = String.format("Price: %s\t\t", price);
+
+        return n.concat(b).concat(d).concat(p);
+    }
 }

@@ -23,6 +23,7 @@ public class ProxyClient implements ClientInterface {
         bankAccount = client.getBankAccount();
         country = client.getCountry();
         money = client.getMoney();
+        shoppingCart = new LinkedList<>();
     }
 
     public void setMoney(double money) {
@@ -65,6 +66,18 @@ public class ProxyClient implements ClientInterface {
         client.setMoney(money);
     }
 
+    public void addToShoppingCart(Product product) {
+        shoppingCart.add(product);
+    }
+
+    public void removeFromShoppingCart(Product product) {
+        shoppingCart.remove(product);
+    }
+
+    public LinkedList<Product> getShoppingCart() {
+        return shoppingCart;
+    }
+
     @Override public String toString() {
         String n = String.format("Name: %s\n", name);
         String u = String.format("Username: %s\n", username);
@@ -90,5 +103,20 @@ public class ProxyClient implements ClientInterface {
         String m = String.format("Money: %s", money);
 
         return n + u + p + pN + a + b + c + m;
+    }
+
+    @Override public boolean equals(Object object) {
+        if (!(object instanceof ProxyClient))
+            return false;
+
+        ProxyClient proxy = (ProxyClient)object;
+        return this.name.equals(proxy.getName()) &&
+                this.username.equals(proxy.getUsername()) &&
+                this.password == proxy.getPassword() &&
+                this.phoneNumber == proxy.getPhoneNumber() &&
+                this.address.equals(proxy.getAddress()) &&
+                this.bankAccount == proxy.getBankAccount() &&
+                this.country.equals(proxy.getCountry()) &&
+                this.money == proxy.getMoney();
     }
 }

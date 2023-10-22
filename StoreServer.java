@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.lang.reflect.Proxy;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Iterator;
@@ -67,10 +66,44 @@ public class StoreServer {
                 String client = message.substring("SIGNIN".length());
                 clientSignIn(connection, client);
 
+            } else if (message.startsWith("CATALOGUE")) {
+                databaseRequest(connection);
+
+            } else if (message.startsWith("PURCHASEMODE")) {
+                purchaseMode(connection);     
+
+            } else if (message.startsWith("CONNECT")) {
+                connect(connection);
+
+            } else if (message.startsWith("ADDTOCART")) {
+                String client = message.substring("ADDTOCART".length(), message.indexOf("Product: "));
+                String product = message.substring(message.indexOf("Product: ") + "Product: ".length());
+                addToCart(connection, client, product);
+
+            } else if (message.startsWith("REMOVEFROMSHOPPINGCART")) {
+                String client = message.substring("REMOVEFROMSHOPPINGCART".length(), message.indexOf("Product: "));
+                String product = message.substring(message.indexOf("Product: ") + "Product: ".length());
+                removeFromCart(connection, client, product);
+
+            } else if (message.startsWith("PRINTSHOPPINGCART")) {
+                String client = message.substring("PRINTSHOPPINGCART".length());
+                printShoppingCart(connection, client);
+
+            } else if (message.startsWith("PURCHASESHOPPINGCART")){
+                String client = message.substring("PURCHASESHOPPINGCART".length());
+                purchaseShoppingCart(connection, client);
+
+            } else if (message.startsWith("PURCHASE")) {
+                String client = message.substring("PURCHASE".length(), message.indexOf("Product: "));
+                String product = message.substring(message.indexOf("Product: ") + "Product: ".length());
+                purchase(connection, client, product);
+
             } else if (message.startsWith("DISCONNECT")) {
                 toDisconnect(connection);
 
             } else if (message.startsWith("INVALID")) {
+                error(connection, message.toString());
+            } else {
                 error(connection, message.toString());
             }
         }
@@ -82,9 +115,16 @@ public class StoreServer {
         try{
             Iterator<Product> iterator = database.iterator();
             connection.sendDatabase(store, iterator);
+            connection.sendMessage("CONNECT");
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void catalogue(Connection connection) {
+        try {
+            connection.sendDatabase(store, database.iterator());
+        } catch(IOException ioe) {}
     }
 
     private void toDisconnect(Connection connection) {
@@ -112,12 +152,15 @@ public class StoreServer {
         String p = client.substring(client.indexOf("Password: ") + "Password: ".length(), client.indexOf("Phone number"));
         for (ProxyClient c : clients)
             if (c.getUsername().equals(u) && c.getPassword() == p.hashCode()) {
-                country(connection, c.getCountry());
+                country(connection, c);
+                try{
+                    connection.sendMessage("CONNECT");
+                } catch (IOException ioe) {}
                 return;
             }
         
         try {
-            connection.sendMessage("INVALID".concat("You have not signed up yet.\n"));
+            connection.sendMessage("DISCONNECT".concat("You have not signed up yet.\n"));
         } catch (IOException ioe) {}
     }
 
@@ -130,7 +173,7 @@ public class StoreServer {
                     connection.sendMessage("SIGNUP".concat("You've already signed up; " +
                                         "creating the store according to your country anyway...\n"));
                 } catch (IOException ioe) {}
-                country(connection, c.getCountry());
+                country(connection, c);
                 databaseRequest(connection);
                 return;
             }
@@ -145,21 +188,112 @@ public class StoreServer {
         ProxyClient newClient = new ProxyClient(new Client(u, p, n, Long.parseLong(pN), a, 
                                                 Long.parseLong(b), c, Double.parseDouble(m)));
         clients.add(newClient);
-        country(connection, c);
-        store.sayHi();
-        databaseRequest(connection);
+        country(connection, newClient);
+        try{
+            connection.sendMessage("CONNECT");
+        } catch (IOException ioe) {}
     }
 
-    private void country(Connection connection, String country) {
+    private void purchaseMode(Connection connection) {
+        writeMessage("The connection %d has requested to enter the purchase mode.\n", port);
+        catalogue(connection);
+        try {
+            connection.sendMessage("PURCHASEMODE");
+            connection.sendMessage(options());
+        } catch (IOException ioe) {
+            System.out.println("Could not enter the purchase mode.\n");
+            disconnect(connection);
+        }
+    }
+
+    private void addToCart(Connection connection, String client, String product) {
+        String n = client.substring(client.indexOf("Name: ") + "Name: ".length(), 
+                                    client.indexOf("Username:"));
+        Iterator<Product> iterator = database.iterator();
+        Product producto = null;
+        while (iterator.hasNext()) {
+            Product next = iterator.next();
+            if (next.getName().equals(product))
+                producto = next;
+        }
+        store.addToCart(connection, n, producto);
+        try {
+            connection.sendMessage(options());
+        } catch(IOException ioe) {}
+    }
+
+    private void removeFromCart(Connection connection, String client, String product) {
+        String n = client.substring(client.indexOf("Name: ") + "Name: ".length(), 
+                                    client.indexOf("Username:"));
+        Iterator<Product> iterator = database.iterator();
+        Product producto = null;
+        while (iterator.hasNext()) {
+            Product next = iterator.next();
+            if (next.getName().equals(product))
+                producto = next;
+        }
+        store.removeFromCart(connection, n, producto);
+        try {
+            connection.sendMessage(options());
+        } catch(IOException ioe) {}
+    }
+
+    private void printShoppingCart(Connection connection, String client) {
+        String n = client.substring(client.indexOf("Name: ") + "Name: ".length(), 
+                                    client.indexOf("Username:"));
+        store.printShoppingCart(connection, n);
+        try {
+            connection.sendMessage(options());
+        } catch (IOException ioe) {}
+    }
+
+    private void purchaseShoppingCart(Connection connection, String client) {
+        String n = client.substring(client.indexOf("Name: ") + "Name: ".length(), 
+                                    client.indexOf("Username:"));
+        store.purchaseShoppingCart(connection, n);
+        try {
+            connection.sendMessage(options());
+        } catch (IOException ioe) {}
+    }
+
+    private void purchase(Connection connection, String client, String product) {
+        String n = client.substring(client.indexOf("Name: ") + "Name: ".length(), 
+                                    client.indexOf("Username:"));
+        Iterator<Product> iterator = database.iterator();
+        Product producto = null;
+        while (iterator.hasNext()) {
+            Product next = iterator.next();
+            if (next.getName().equals(product))
+                producto = next;
+        }
+        store.purchase(connection, n, producto);
+        try {
+            connection.sendMessage(options());
+        } catch(IOException ioe) {}
+    }
+
+    private void country(Connection connection, ProxyClient proxy) {
+        String country = proxy.getCountry();
         switch(country) {
             case "México" :
                 store = new MexicoVirtualStore(database.iterator());
+                store.add(proxy);
+                break;
+            case "Mexico" :
+                store = new MexicoVirtualStore(database.iterator());
+                store.add(proxy);
                 break;
             case "España" : 
                 store = new SpainVirtualStore(database.iterator());
+                store.add(proxy);
                 break;
             case "United States" : 
                 store = new USAVirtualStore(database.iterator());
+                store.add(proxy);
+                break;
+            case "USA" : 
+                store = new USAVirtualStore(database.iterator());
+                store.add(proxy);
                 break;
             default : 
                 try {
@@ -168,11 +302,18 @@ public class StoreServer {
                     System.out.println("Error while trying to notify the client that " +
                                             "its country is not valid.\n");
                 }
+                break;
         }
     }
 
-    private void storeManager(String country) {
+    private String options() {
+        return "OPTIONS" + store.options();
+    }
 
+    private void connect(Connection connection) {
+        try {
+            connection.sendMessage("CONNECT");
+        } catch (IOException ioe) {}
     }
 
     public VirtualStore getVirtualStore() {
