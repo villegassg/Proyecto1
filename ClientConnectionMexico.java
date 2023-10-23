@@ -1,17 +1,22 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.NoSuchElementException;
+ //La clase ClientConnectionMexico va a implementar la clase ClinetConnectionInterface
 
 public class ClientConnectionMexico implements ClientConnectionInterface {
-    
+    //Declaramos una variable cliente del tipoProxyClient
     ProxyClient client;
+    //Declararemos una llada scanner del tipo BufferedReader
     BufferedReader scanner;
 
+    //El constructor ClientConnectionMexico va inicializar dos objetos ProxyCLient y BuggerdReader
     public ClientConnectionMexico(ProxyClient client, BufferedReader in) {
         this.client = client;
         this.scanner = in;
     }
- 
+ //El método purchase va a dirigir y administrar el modo de compra que el cliente le guste más
+    //así el cliente va a elegir si quiere agregar los productos al carrito, eliminar, imprimir contenido
+    //del producto, realizar compra, comprar porductos directament5e o salir del modo de compra.
     public void purchase(Connection connection) {
         int action = -1;
 
