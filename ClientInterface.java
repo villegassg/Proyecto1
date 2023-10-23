@@ -1,5 +1,6 @@
+//Interfaz ClientInterface
 public interface ClientInterface {
-
+//EL metodo setMoney va a reciir un paramedtro money de tipo double
     public void setMoney(double money);
 
     public String getUsername();
