@@ -1,8 +1,11 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
+//Clase ClientManager
 public class ClientManager {
+    // El metodo main  va a solicitar al cliente que elija el idioma de la tienda que quiere visitar,
+    //así mismo crea una instancia de una clase de interfaz del cliente dependiendo de que idioma 
+    //elija el cliente
 
     public static void main(String[] args) {
         System.out.println("Welcome to the best online Store! \n");
