@@ -23,6 +23,12 @@ public class StoreServer {
         this.listeners = new LinkedList<>();
         this.database = createDatabase();
         clients = new LinkedList<>();
+        ProxyClient cesar = new ProxyClient(new Client("villegassg", "proyecto1", "César Villegas", Long.parseLong("5591030218"), "Facultad de Ciencias", Long.parseLong("1234567812345678"), "México", 999999));
+        ProxyClient ximena = new ProxyClient(new Client("ximeanluv", "ximena123", "Ximena Andrade", Long.parseLong("1234567890"), "Facultad de Ciencias", Long.parseLong("1234123456785678"), "México", 999999));
+
+        store = new MexicoVirtualStore(database.iterator());
+        store.add(cesar);
+        store.add(ximena);
     }
 
     public void serve() {
@@ -58,6 +64,10 @@ public class StoreServer {
             if (message.startsWith("DATABASEREQUESTED")) {
                 databaseRequest(connection);
 
+            } else if (message.startsWith("OPTIONS")) {
+                try {
+                    connection.sendMessage(options());
+                } catch(IOException ioe) {}
             } else if (message.startsWith("SIGNUP")) {
                 String client = message.substring("SIGNUP".length());
                 clientSignUp(connection, client);
@@ -89,14 +99,24 @@ public class StoreServer {
                 String client = message.substring("PRINTSHOPPINGCART".length());
                 printShoppingCart(connection, client);
 
+            } else if (message.startsWith("BANKACCOUNT1")) {
+                String bankAccount = message.substring("BANKACCOUNT1".length(), message.indexOf("Client: "));
+                String client = message.substring(message.indexOf("Client: ") + "Client: ".length());
+                purchaseShoppingCart1(connection, client, bankAccount);
+
+            } else if (message.startsWith("BANKACCOUNT2")) {
+                String bankAccount = message.substring("BANKACCOUNT".length(), message.indexOf("Product: "));
+                String product = message.substring(message.indexOf("Product: ") + "Product: ".length(), 
+                                                    message.indexOf("Client: "));
+                String client = message.substring(message.indexOf("Client: ") + "Client: ".length());
+                purchase1(connection, product, client, bankAccount);
+
             } else if (message.startsWith("PURCHASESHOPPINGCART")){
-                String client = message.substring("PURCHASESHOPPINGCART".length());
-                purchaseShoppingCart(connection, client);
+                purchaseShoppingCart(connection);
 
             } else if (message.startsWith("PURCHASE")) {
-                String client = message.substring("PURCHASE".length(), message.indexOf("Product: "));
                 String product = message.substring(message.indexOf("Product: ") + "Product: ".length());
-                purchase(connection, client, product);
+                purchase(connection, product);
 
             } else if (message.startsWith("DISCONNECT")) {
                 toDisconnect(connection);
@@ -149,7 +169,7 @@ public class StoreServer {
 
     private void clientSignIn(Connection connection, String client) {
         String u = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
-        String p = client.substring(client.indexOf("Password: ") + "Password: ".length(), client.indexOf("Phone number"));
+        String p = client.substring(client.indexOf("Password: ") + "Password: ".length(), client.indexOf("Phone"));
         for (ProxyClient c : clients)
             if (c.getUsername().equals(u)) {
                 if (c.getPassword() == p.hashCode()) {
@@ -215,8 +235,7 @@ public class StoreServer {
     }
 
     private void addToCart(Connection connection, String client, String product) {
-        String n = client.substring(client.indexOf("Name: ") + "Name: ".length(), 
-                                    client.indexOf("Username:"));
+        String n = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
         Iterator<Product> iterator = database.iterator();
         Product producto = null;
         while (iterator.hasNext()) {
@@ -231,8 +250,7 @@ public class StoreServer {
     }
 
     private void removeFromCart(Connection connection, String client, String product) {
-        String n = client.substring(client.indexOf("Name: ") + "Name: ".length(), 
-                                    client.indexOf("Username:"));
+        String n = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
         Iterator<Product> iterator = database.iterator();
         Product producto = null;
         while (iterator.hasNext()) {
@@ -247,26 +265,43 @@ public class StoreServer {
     }
 
     private void printShoppingCart(Connection connection, String client) {
-        String n = client.substring(client.indexOf("Name: ") + "Name: ".length(), 
-                                    client.indexOf("Username:"));
+        String n = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
         store.printShoppingCart(connection, n);
         try {
             connection.sendMessage(options());
         } catch (IOException ioe) {}
     }
 
-    private void purchaseShoppingCart(Connection connection, String client) {
-        String n = client.substring(client.indexOf("Name: ") + "Name: ".length(), 
-                                    client.indexOf("Username:"));
-        store.purchaseShoppingCart(connection, n);
+    private void purchaseShoppingCart(Connection connection) {
+        try {
+            connection.sendMessage("BANKACCOUNT1");
+        } catch (IOException ioe) {}
+    }
+
+    private void purchaseShoppingCart1(Connection connection, String client, String ba) {
+        String n = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
+        long rba = 0;
+        try {
+            rba = Long.parseLong(ba);
+        } catch (NumberFormatException nfe) {}
+        store.purchaseShoppingCart(connection, n, rba);
         try {
             connection.sendMessage(options());
         } catch (IOException ioe) {}
     }
 
-    private void purchase(Connection connection, String client, String product) {
-        String n = client.substring(client.indexOf("Name: ") + "Name: ".length(), 
-                                    client.indexOf("Username:"));
+    private void purchase(Connection connection, String product) {
+        try {
+            connection.sendMessage("BANKACCOUNT2" + product);
+        } catch (IOException ioe) {}
+    }
+
+    private void purchase1(Connection connection, String product, String client, String ba) {
+        String n = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
+        long rba = 0;
+        try {
+            rba = Long.parseLong(ba);
+        } catch (NumberFormatException nfe) {}
         Iterator<Product> iterator = database.iterator();
         Product producto = null;
         while (iterator.hasNext()) {
@@ -274,7 +309,7 @@ public class StoreServer {
             if (next != null && next.getName().equals(product))
                 producto = next;
         }
-        store.purchase(connection, n, producto);
+        store.purchase(connection, producto, n, rba);
         try {
             connection.sendMessage(options());
         } catch(IOException ioe) {}

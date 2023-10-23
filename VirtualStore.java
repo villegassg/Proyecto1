@@ -10,9 +10,9 @@ public interface VirtualStore {
 
     public void printShoppingCart(Connection connection, String name);
 
-    public void purchaseShoppingCart(Connection connection, String name);
+    public void purchaseShoppingCart(Connection connection, String name, long bankAccount);
 
-    public void purchase(Connection connection, String client, Product product);
+    public void purchase(Connection connection, Product product, String name, long bankAccount);
 
     public String deliveryDate();
 

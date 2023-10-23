@@ -7,4 +7,8 @@ public interface ClientConnectionInterface {
     public void connect(Connection connection);
  //El metodo purchaseMode va hacer las acciones del modo de compra que desee el cliente
     public void purchaseMode();
+
+    public void bankAccount1(Connection connection);
+
+    public void bankAccount2(Connection connection, String product);
 }

@@ -73,6 +73,11 @@ public class ClientConnection {
                 String sc = message.substring("PRINTSHOPPINGCART".length());
                 sc = sc.replaceAll("\t", "\n");
                 System.out.println(sc);
+            } else if (message.startsWith("BANKACCOUNT1")) {
+                clientConnection.bankAccount1(connection);
+            } else if (message.startsWith("BANKACCOUNT2")) {
+                String product = "Product: " + message.substring("BANKACCOUNT2".length());
+                clientConnection.bankAccount2(connection, product);
             } else if (message.startsWith("EMPTYSHOPPINGCART")) {
                 String fail = message.substring("EMPTYSHOPPINGCART".length());
                 System.out.println(fail);
@@ -102,6 +107,7 @@ public class ClientConnection {
                 try {
                     connection.sendMessage("INVALID");
                 } catch (IOException ioe) {}
+                System.exit(1);
             } else {
                 System.out.println(message);
             }

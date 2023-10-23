@@ -41,7 +41,7 @@ public class USAVirtualStore implements VirtualStore {
         }
 
         for (ProxyClient proxy : clients) 
-            if (proxy.getName().equals(name))
+            if (proxy.getUsername().equals(name))
                 proxy.addToShoppingCart(product);
 
         String success = "Product added to your cart succesfully!\n";
@@ -60,7 +60,7 @@ public class USAVirtualStore implements VirtualStore {
         }
 
         for (ProxyClient proxy : clients) 
-            if (proxy.getName().equals(name))
+            if (proxy.getUsername().equals(name))
                 if (proxy.getShoppingCart().contains(product))
                     proxy.removeFromShoppingCart(product);
                 else {
@@ -81,8 +81,15 @@ public class USAVirtualStore implements VirtualStore {
     public void printShoppingCart(Connection connection, String name) {
         ProxyClient client = null;
         for (ProxyClient proxy : clients) 
-            if (proxy.getName().equals(name))
+            if (proxy.getUsername().equals(name))
                 client = proxy;
+
+        if (client == null) {
+            try {
+                connection.sendMessage("DISCONNECT" + "Client not found.\n");
+                return;
+            } catch (IOException ioe) {}
+        }
 
         LinkedList<Product> shoppingCart = client.getShoppingCart();
         
@@ -100,11 +107,11 @@ public class USAVirtualStore implements VirtualStore {
         } catch (IOException ioe) {}
     }
 
-    public void purchaseShoppingCart(Connection connection, String name) {
+    public void purchaseShoppingCart(Connection connection, String name, long bankAccount) {
         LinkedList<Product> shoppingCart = new LinkedList<>();
         ProxyClient proxyClient = null;
         for (ProxyClient proxy : clients)
-            if (proxy.getName().equals(name)) {
+            if (proxy.getUsername().equals(name)) {
                 proxyClient = proxy;
                 shoppingCart = proxy.getShoppingCart();
             }
@@ -115,6 +122,14 @@ public class USAVirtualStore implements VirtualStore {
                 connection.sendMessage("EMPTYSHOPPINGCART" + fail);
                 return;
             } catch(IOException ioe) {}
+        }
+
+        if (proxyClient.getBankAccount() != bankAccount) {
+            try {
+                connection.sendMessage("INVALID" + "The bank account you entered doesn't " +
+                                        "match with the bank account in our database.\n");
+                return;
+            } catch (IOException ioe) {}
         }
 
         double total = 0;
@@ -148,10 +163,11 @@ public class USAVirtualStore implements VirtualStore {
                 connection.sendMessage("PURCHASESHOPPINGCART" + success);
                 connection.sendMessage("DELIVERY" + delivery);
             } catch (IOException ioe) {}
+            proxyClient.clearShoppingCart();
         }
     }
 
-    public void purchase(Connection connection, String name, Product product) {
+    public void purchase(Connection connection, Product product, String name, long bankAccount) {
         if (product == null) {
             String fail = "Could not purchase the product because you entered its name wrong, " +
                             "try again.\n";
@@ -169,8 +185,16 @@ public class USAVirtualStore implements VirtualStore {
         ProxyClient proxyClient = null;
 
         for (ProxyClient proxy : clients) 
-            if (proxy.getName().equals(name)) 
+            if (proxy.getUsername().equals(name)) 
                 proxyClient = proxy;
+
+        if (proxyClient.getBankAccount() != bankAccount) {
+            try {
+                connection.sendMessage("INVALID" + "The bank account you entered doesn't " +
+                                        "match with the bank account in our database.\n");
+                return;
+            } catch (IOException ioe) {}
+        }
 
         double money = proxyClient.getMoney();
 
