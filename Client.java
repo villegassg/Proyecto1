@@ -1,18 +1,33 @@
 /*Clase cliente que va a representar a los clientes.Los clientes tienen nombre, contraseña
-*, nombre de usuario, llave, dinero, implementa a cliente interface*/
+*, dirección, nombre de usuario, llave, dinero, país, número telefónico y cuenta
+*bancaria, así mismo la clase cliente implementa a cliente interface*/
 public class Client implements ClientInterface {
-    //kdnckdn
+    //Nombre de usuario del cliente
     private String username;
+    //Contraseña del cliente
     private int password;
+    //Nombre del cliente
     private String name; 
+    //Numero telefónico
     private long phoneNumber;
+    //Direccion del usuario
     private String address;
+    //Cuenta bancaria
     private long bankAccount;
+    //Pais del cliente
     private String country;
+    //Dinero con el que cuenta el cliente
     private double money;
 
     public Client() {}
-
+    
+    /**
+     * Define el estado inicial del cliente.
+     * @param username el .
+     * @param cuenta el número de cuenta del estudiante.
+     * @param promedio el promedio del estudiante.
+     * @param edad la edad del estudiante.
+     */
     public Client(String username, String password, String name, Long phoneNumber, 
                     String address, long bankAccount, String country, double money) {
         this.username = username;
