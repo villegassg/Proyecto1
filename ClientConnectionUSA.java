@@ -56,7 +56,7 @@ public class ClientConnectionUSA implements ClientConnectionInterface {
                     break;
                 case 4: 
                     try {
-                        connection.sendMessage("PURCHASESHOPPINGCART" + client.toString2());
+                        connection.sendMessage("PURCHASESHOPPINGCART");
                     } catch(IOException ioe) {
                         ioe.printStackTrace();
                     }
@@ -65,8 +65,7 @@ public class ClientConnectionUSA implements ClientConnectionInterface {
                     System.out.println("\nPlease enter the name of the product you'd like to purchase directly: ");
                     try {
                         String product3 = scanner.readLine();
-                        connection.sendMessage("PURCHASE" + client.toString2() + 
-                                                "Product: " + product3);
+                        connection.sendMessage("PURCHASE" + "Product: " + product3);
                     } catch (IOException ioe) {
                         ioe.printStackTrace();
                     }
@@ -131,5 +130,23 @@ public class ClientConnectionUSA implements ClientConnectionInterface {
 
     public void purchaseMode() {
         System.out.println("Entering the purchase mode: \n");
+    }
+
+    public void bankAccount1(Connection connection) {
+        System.out.println("Please enter again your bank account (just for security): ");
+        String bA = "";
+        try {
+            bA = scanner.readLine();
+            connection.sendMessage("BANKACCOUNT1" + bA + "Client: " + client.toString2());
+        } catch (IOException ioe) {}
+    }
+
+    public void bankAccount2(Connection connection, String product) {
+        System.out.println("Please enter again your bank account (just for security): ");
+        String bA = "";
+        try {
+            bA = scanner.readLine();
+            connection.sendMessage("BANKACCOUNT2" + bA + product + "Client: " + client.toString2());
+        } catch (IOException ioe) {}
     }
 }

@@ -57,7 +57,7 @@ public class ClientConnectionMexico implements ClientConnectionInterface {
                     break;
                 case 4: 
                     try {
-                        connection.sendMessage("PURCHASESHOPPINGCART" + client.toString2());
+                        connection.sendMessage("PURCHASESHOPPINGCART");
                     } catch(IOException ioe) {
                         ioe.printStackTrace();
                     }
@@ -67,8 +67,7 @@ public class ClientConnectionMexico implements ClientConnectionInterface {
                                         "quieres comprar directamente: ");
                     try {
                         String product3 = scanner.readLine();
-                        connection.sendMessage("PURCHASE" + client.toString2() + 
-                                                "Product: " + product3);
+                        connection.sendMessage("PURCHASE" + "Product: " + product3);
                     } catch (IOException ioe) {
                         ioe.printStackTrace();
                     }
@@ -81,7 +80,10 @@ public class ClientConnectionMexico implements ClientConnectionInterface {
                     break;
                 default:
                     System.out.println("Por favor ingresa una acción valida.\n");
-                    continue;
+                    try {
+                        connection.sendMessage("OPTIONS");
+                    } catch (IOException ioe) {}
+                    break;
             }   
             break;
         } while (true);
@@ -134,5 +136,23 @@ public class ClientConnectionMexico implements ClientConnectionInterface {
 
     public void purchaseMode() {
         System.out.println("Entrando al modo de compra: \n");
+    }
+
+    public void bankAccount1(Connection connection) {
+        System.out.println("Ingresa otra vez tu cuenta de banco por favor (por seguridad): ");
+        String bA = "";
+        try {
+            bA = scanner.readLine();
+            connection.sendMessage("BANKACCOUNT1" + bA + "Client: " + client.toString2());
+        } catch (IOException ioe) {}
+    }
+
+    public void bankAccount2(Connection connection, String product) {
+        System.out.println("Ingresa otra vez tu cuenta de banco por favor (por seguridad): ");
+        String bA = "";
+        try {
+            bA = scanner.readLine();
+            connection.sendMessage("BANKACCOUNT2" + bA + product + "Client: " + client.toString2());
+        } catch (IOException ioe) {}
     }
 }

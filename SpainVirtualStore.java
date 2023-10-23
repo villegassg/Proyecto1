@@ -43,7 +43,7 @@ public class SpainVirtualStore implements VirtualStore {
         }
 
         for (ProxyClient proxy : clients) 
-            if (proxy.getName().equals(name))
+            if (proxy.getUsername().equals(name))
                 proxy.addToShoppingCart(product);
 
         String success = "¡Producto agregado a tu carrito de compras con éxito!\n";
@@ -63,7 +63,7 @@ public class SpainVirtualStore implements VirtualStore {
         }
 
         for (ProxyClient proxy : clients) 
-            if (proxy.getName().equals(name))
+            if (proxy.getUsername().equals(name))
                 if (proxy.getShoppingCart().contains(product))
                     proxy.removeFromShoppingCart(product);
                 else {
@@ -84,8 +84,15 @@ public class SpainVirtualStore implements VirtualStore {
     public void printShoppingCart(Connection connection, String name) {
         ProxyClient client = null;
         for (ProxyClient proxy : clients) 
-            if (proxy.getName().equals(name))
+            if (proxy.getUsername().equals(name))
                 client = proxy;
+
+        if (client == null) {
+            try {
+                connection.sendMessage("DISCONNECT" + "El cliente no ha sido encontrado.\n");
+                return;
+            } catch (IOException ioe) {}
+        }
 
         LinkedList<Product> shoppingCart = client.getShoppingCart();
         
@@ -103,11 +110,11 @@ public class SpainVirtualStore implements VirtualStore {
         } catch (IOException ioe) {}
     }
 
-    public void purchaseShoppingCart(Connection connection, String name) {
+    public void purchaseShoppingCart(Connection connection, String name, long bankAccount) {
         LinkedList<Product> shoppingCart = new LinkedList<>();
         ProxyClient proxyClient = null;
         for (ProxyClient proxy : clients)
-            if (proxy.getName().equals(name)) {
+            if (proxy.getUsername().equals(name)) {
                 proxyClient = proxy;
                 shoppingCart = proxy.getShoppingCart();
             }
@@ -118,6 +125,15 @@ public class SpainVirtualStore implements VirtualStore {
                 connection.sendMessage("EMPTYSHOPPINGCART" + fail);
                 return;
             } catch(IOException ioe) {}
+        }
+
+        if (proxyClient.getBankAccount() != bankAccount) {
+            try {
+                connection.sendMessage("INVALID" + "La cuenta de banco que ingresaste no " +
+                                        "coincide con la cuenta de banco que tenemos en " +
+                                        "nuestra base de datos.\n");
+                return;
+            } catch (IOException ioe) {}
         }
 
         double total = 0;
@@ -151,10 +167,11 @@ public class SpainVirtualStore implements VirtualStore {
                 connection.sendMessage("PURCHASESHOPPINGCART" + success);
                 connection.sendMessage("DELIVERY" + delivery);
             } catch (IOException ioe) {}
+            proxyClient.clearShoppingCart();
         }
     }
 
-    public void purchase(Connection connection, String name, Product product) {
+    public void purchase(Connection connection, Product product, String name, long bankAccount) {
         if (product == null) {
             String fail = "La compra de tu producto no ha podido ser completa porque " +
                             "habeis ingresado mal su nombre.\n";
@@ -172,8 +189,17 @@ public class SpainVirtualStore implements VirtualStore {
         ProxyClient proxyClient = null;
 
         for (ProxyClient proxy : clients) 
-            if (proxy.getName().equals(name)) 
+            if (proxy.getUsername().equals(name)) 
                 proxyClient = proxy;
+
+        if (proxyClient.getBankAccount() != bankAccount) {
+            try {
+                connection.sendMessage("INVALID" + "La cuenta de banco que ingresaste no " +
+                                        "coincide con la cuenta de banco que tenemos en " +
+                                        "nuestra base de datos.\n");
+                return;
+            } catch (IOException ioe) {}
+        }
 
         double money = proxyClient.getMoney();
 

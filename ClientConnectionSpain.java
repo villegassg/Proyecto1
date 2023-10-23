@@ -57,7 +57,7 @@ public class ClientConnectionSpain implements ClientConnectionInterface {
                     break;
                 case 4: 
                     try {
-                        connection.sendMessage("PURCHASESHOPPINGCART" + client.toString2());
+                        connection.sendMessage("PURCHASESHOPPINGCART");
                     } catch(IOException ioe) {
                         ioe.printStackTrace();
                     }
@@ -67,8 +67,7 @@ public class ClientConnectionSpain implements ClientConnectionInterface {
                                         "gustaría comprar directamente: ");
                     try {
                         String product3 = scanner.readLine();
-                        connection.sendMessage("PURCHASE" + client.toString2() + 
-                                                "Product: " + product3);
+                        connection.sendMessage("PURCHASE" + "Product: " + product3);
                     } catch (IOException ioe) {
                         ioe.printStackTrace();
                     }
@@ -134,5 +133,23 @@ public class ClientConnectionSpain implements ClientConnectionInterface {
 
     public void purchaseMode() {
         System.out.println("Entrando al modo de compra: \n");
+    }
+
+    public void bankAccount1(Connection connection) {
+        System.out.println("Por favor ingresa de nuevo tu cuenta de banco (por seguridad): ");
+        String bA = "";
+        try {
+            bA = scanner.readLine();
+            connection.sendMessage("BANKACCOUNT1" + bA + "Client: " + client.toString2());
+        } catch (IOException ioe) {}
+    }
+
+    public void bankAccount2(Connection connection, String product) {
+        System.out.println("Por favor ingresa de nuevo tu cuenta de banco (por seguridad): ");
+        String bA = "";
+        try {
+            bA = scanner.readLine();
+            connection.sendMessage("BANKACCOUNT2" + bA + product + "Client: " + client.toString2());
+        } catch (IOException ioe) {}
     }
 }

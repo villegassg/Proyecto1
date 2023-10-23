@@ -78,6 +78,10 @@ public class ProxyClient implements ClientInterface {
         return shoppingCart;
     }
 
+    public void clearShoppingCart() {
+        shoppingCart.clear();
+    }
+
     @Override public String toString() {
         String n = String.format("Name: %s\n", name);
         String u = String.format("Username: %s\n", username);
