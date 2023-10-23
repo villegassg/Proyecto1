@@ -2,7 +2,7 @@
 public class Product {
 //Creamos una variable name privada del tipo String
     private String name;
-//Creamos una variable barcode privada del tipo long
+//Creamos una variable barcode privada del tipo long.
     private long barcode;
 //Creamos una variable privada department del tipo String
     private String department;
