@@ -3,7 +3,7 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 
 public class ClientConnectionSpain implements ClientConnectionInterface {
-    
+     //Declaramos una variable cliente del tipoProxyClient
     ProxyClient client;
     BufferedReader scanner;
 
