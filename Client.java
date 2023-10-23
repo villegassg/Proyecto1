@@ -1,5 +1,7 @@
+/*Clase cliente que va a representar a los clientes.Los clientes tienen nombre, contraseña
+*, nombre de usuario, llave, dinero, implementa a cliente interface*/
 public class Client implements ClientInterface {
-    //hola
+    //
     private String username;
     private int password;
     private String name; 
