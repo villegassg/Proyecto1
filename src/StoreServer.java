@@ -4,19 +4,40 @@ import java.net.Socket;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+/**
+ * Clase pública StoreServer. Regula el servidor general de la tienda, controla el flujo de 
+ * mensajes entre sus clientes y el servidor y ejecuta las acciones pedidas por cada cliente.
+ */
 public class StoreServer {
 
+    /* La base de datos de los productos. */
     private Database database;
+    /* La tienda virtual. */
     private VirtualStore store;
+    /* El socket servidor. */
     private ServerSocket serverSocket;
+    /* El puerto de la conexión de cada cliente. */
     private int port;
+    /* La lista de conexiones. */
     private LinkedList<Connection> connections;
+    /* Nos dice si el servidor está corriendo. */
     private boolean isRunning;
+    /* La lista de escuchas del servidor. */
     private LinkedList<ServerListener> listeners;
+    /* La lista de clientes del servidor, y por tanto, de las tiendas virtuales. */
     private LinkedList<ProxyClient> clients;
+    /* Usuario predeterminado. */
     private ProxyClient cesar;
+    /* Usuario predeterminado. */
     private ProxyClient ximena;
 
+    /**
+     * Constructor público. Asigna el puerto de la conexión definido en la clase "Server", 
+     * crea un nuevo socket servidor único para cada conexión, inicia las listas, crea la base 
+     * de datos, e inicia a los usuarios predeterminados.
+     * @param port el puerto a usar :).
+     * @throws IOException
+     */
     public StoreServer(int port) throws IOException {
         this.port = port;
         this.serverSocket = new ServerSocket(port);
@@ -29,6 +50,9 @@ public class StoreServer {
         ximena = new ProxyClient(new Client("ximeanluv", "ximena123", "Ximena Andrade", Long.parseLong("1234567890"), "Facultad de Ciencias", Long.parseLong("1234123456785678"), "México", 999999));
     }
 
+    /**
+     * Comienza la conexión entre el puerto asignado y el servidor.
+     */
     public void serve() {
         writeMessage("Listening from the port: %s.\n", port);
         while (isRunning) {
@@ -49,14 +73,27 @@ public class StoreServer {
         }
     }
 
+    /**
+     * Agrega un escucha a la lista de escuchas.
+     * @param listener el escucha a agregar.
+     */
     public void addListener(ServerListener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * Limpia la lista de escuchas.
+     */
     public void clearListeners() {
         listeners.clear();
     }
 
+    /**
+     * Maneja la recepción de mensajes de la conexión, y ejecuta la acción predeterminada 
+     * para cada mensaje.
+     * @param connection la conexión de donde se reciben los mensajes.
+     * @param message el mensaje.
+     */
     private void receivedMessage(Connection connection, String message) {
         if (connection.isActive()) {
             if (message.startsWith("DATABASEREQUESTED")) {
@@ -127,7 +164,10 @@ public class StoreServer {
         }
     }    
     
-
+    /**
+     * Envía la base de datos a la conexión que la ha solicitado.
+     * @param connection la conexión.
+     */
     private void databaseRequest(Connection connection) {
         writeMessage("Database requested by port: %d", port);
         try{
@@ -139,17 +179,30 @@ public class StoreServer {
         }
     }
 
+    /**
+     * Le envía el catálogo de productos a la conexión que lo ha solicitado.
+     * @param connection la conexión.
+     */
     private void catalogue(Connection connection) {
         try {
             connection.sendDatabase(store, database.iterator());
         } catch(IOException ioe) {}
     }
 
+    /**
+     * Permite a una conexión dada desconectarse del servidor de manera elegante.
+     * @param connection la conexión que será desconectada.
+     */
     private void toDisconnect(Connection connection) {
         writeMessage("Disconnect request by port %d", port);
         disconnect(connection);
     }
     
+    /**
+     * Maneja un error producido en una conexión y la desconecta.
+     * @param connection la conexión a desconectar.
+     * @param message el mensaje a mostrar en la pantalla del servidor.
+     */
     private void error(Connection connection, String message) {
         writeMessage(message);
         writeMessage("Disconnecting the connection from the port %d: Invalid message", 
@@ -157,6 +210,10 @@ public class StoreServer {
         disconnect(connection);
     }
 
+    /**
+     * Desconecta a una conexión.
+     * @param connection la conexión a desconectar.
+     */
     private void disconnect(Connection connection) {
         synchronized(connections) {
             connections.remove(connection);
@@ -165,6 +222,10 @@ public class StoreServer {
         writeMessage("The connection %d has been disconnected.\n", port);
     }
 
+    /**
+     * Crea a los usuarios predeterminados y los agrega a la lista de clientes.
+     * @param connection la conexión que ha solicitado iniciar sesión.
+     */
     private void createUsers(Connection connection) {
         country(connection, cesar);
         country(connection, ximena);
@@ -175,6 +236,11 @@ public class StoreServer {
             clients.add(ximena);
     }
 
+    /**
+     * Permite el inicio de sesión de cierta conexión dado un cliente.
+     * @param connection la conexión.
+     * @param client el cliente.
+     */
     private void clientSignIn(Connection connection, String client) {
         String u = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
         String p = client.substring(client.indexOf("Password: ") + "Password: ".length(), client.indexOf("Phone"));
@@ -202,6 +268,11 @@ public class StoreServer {
         } catch (IOException ioe) {}
     }
 
+    /**
+     * Permite el registro de un cliente desde una conexión cualquiera.
+     * @param connection la conexión.
+     * @param client el cliente a registrar.
+     */
     private void clientSignUp(Connection connection, String client) {
         String u = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
         String p = client.substring(client.indexOf("Password: ") + "Password: ".length(), client.indexOf("Phone number"));
@@ -233,6 +304,10 @@ public class StoreServer {
         } catch (IOException ioe) {}
     }
 
+    /**
+     * Permite a una conexión entrar al modo de compra del servidor.
+     * @param connection la conexión.
+     */
     private void purchaseMode(Connection connection) {
         writeMessage("The connection %d has requested to enter the purchase mode.\n", port);
         catalogue(connection);
@@ -245,6 +320,12 @@ public class StoreServer {
         }
     }
 
+    /**
+     * Permite agregar al carrito de un cliente un determinado producto.
+     * @param connection la conexión que solicitó la operación.
+     * @param client el cliente.
+     * @param product el producto a agregar al carrito del cliente.
+     */
     private void addToCart(Connection connection, String client, String product) {
         String n = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
         Iterator<Product> iterator = database.iterator();
@@ -260,6 +341,12 @@ public class StoreServer {
         } catch(IOException ioe) {}
     }
 
+    /**
+     * Permite eliminar del carrito de un cliente un determinado producto.
+     * @param connection la conexión que solicitó la operación.
+     * @param client el cliente.
+     * @param product el producto a eliminar del carrito del cliente.
+     */
     private void removeFromCart(Connection connection, String client, String product) {
         String n = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
         Iterator<Product> iterator = database.iterator();
@@ -275,6 +362,11 @@ public class StoreServer {
         } catch(IOException ioe) {}
     }
 
+    /**
+     * Permite imprimir el carrito de compras de un cliente.
+     * @param connection la conexión que solicitó la operación.
+     * @param client el cliente.
+     */
     private void printShoppingCart(Connection connection, String client) {
         String n = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
         store.printShoppingCart(connection, n);
@@ -283,12 +375,22 @@ public class StoreServer {
         } catch (IOException ioe) {}
     }
 
+    /**
+     * Permite hacer la compra de todo el carrito de un cliente.
+     * @param connection la conexión que solicitó la operación.
+     */
     private void purchaseShoppingCart(Connection connection) {
         try {
             connection.sendMessage("BANKACCOUNT1");
         } catch (IOException ioe) {}
     }
 
+    /**
+     * Permite hacer la compra de todo el carrito de un cliente.
+     * @param connection la conexión que solicitó la operación.
+     * @param client el cliente.
+     * @param ba la cuenta de banco del cliente.
+     */
     private void purchaseShoppingCart1(Connection connection, String client, String ba) {
         String n = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
         long rba = 0;
@@ -301,12 +403,24 @@ public class StoreServer {
         } catch (IOException ioe) {}
     }
 
+    /**
+     * Permite comprar directamente un determinado producto.
+     * @param connection la conexión que solicitó la operación.
+     * @param product el producto.
+     */
     private void purchase(Connection connection, String product) {
         try {
             connection.sendMessage("BANKACCOUNT2" + product);
         } catch (IOException ioe) {}
     }
 
+    /**
+     * Permite a un cliente comprar directamente un determinado producto.
+     * @param connection la conexión que solicitó la operación.
+     * @param product el producto.
+     * @param client el cliente
+     * @param ba la cuenta de banco del cliente.
+     */
     private void purchase1(Connection connection, String product, String client, String ba) {
         String n = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
         long rba = 0;
@@ -326,6 +440,11 @@ public class StoreServer {
         } catch(IOException ioe) {}
     }
 
+    /**
+     * Permite iniciar una determinada tienda virtual según el país del cliente.
+     * @param connection la conexión que solicitó la operación.
+     * @param proxy el cliente.
+     */
     private void country(Connection connection, ProxyClient proxy) {
         String country = proxy.getCountry();
         switch(country) {
@@ -360,25 +479,47 @@ public class StoreServer {
         }
     }
 
+    /**
+     * Muestra las opciones de compra que tiene la tienda.
+     * @return las opciones de compra.
+     */
     private String options() {
         return "OPTIONS" + store.options();
     }
 
+    /**
+     * Permite al servidor del cliente ejecutar la acción de conectarse al menú inicial de la 
+     * conexión.
+     * @param connection la conexión.
+     */
     private void connect(Connection connection) {
         try {
             connection.sendMessage("CONNECT");
         } catch (IOException ioe) {}
     }
 
+    /**
+     * Permite obtener la tienda que estamos usando.
+     * @return la tienda.
+     */
     public VirtualStore getVirtualStore() {
         return store;
     }
 
+    /**
+     * Imprime un mensaje en la pantalla del servidor.
+     * @param format el formato del mensaje.
+     * @param arguments los argumentos del mensaje.
+     */
     private void writeMessage(String format, Object ... arguments) {
         for (ServerListener listener : listeners) 
             listener.processMessage(format, arguments);
     }
 
+    /**
+     * Crea la base de datos del servidor.
+     * @return la base de datos del servidor.
+     */
     public Database createDatabase() {
         Database dataB = new Database();
         
