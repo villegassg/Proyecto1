@@ -87,7 +87,7 @@ public class ClientConnectionUSA implements ClientConnectionInterface {
             break;
         } while(true);
     }
-    }
+    
 //El método connect va a permitir al cliente seleccionar alguna de las 3 opciones, las cuales son
  //mostrar el cátalogo, comprar y desconectar, despues de seleccionar una opcion se va a enviar un mensaje
  // al servidor a través de la conexión.
