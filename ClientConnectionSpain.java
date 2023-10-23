@@ -7,12 +7,15 @@ public class ClientConnectionSpain implements ClientConnectionInterface {
     ProxyClient client;
      //Declararemos una llada scanner del tipo BufferedReader
     BufferedReader scanner;
-
+     
+    //El constructor ClientConnectionMexico va inicializar dos objetos ProxyCLient y BuggerdReader
     public ClientConnectionSpain(ProxyClient client, BufferedReader in) {
         this.client = client;
         this.scanner = in;
     }
- 
+  //El método purchase va a dirigir y administrar el modo de compra que el cliente le guste más
+    //así el cliente va a elegir si quiere agregar los productos al carrito, eliminar, imprimir contenido
+    //del producto, realizar compra, comprar porductos directamente o salir del modo de compra.
     public void purchase(Connection connection) {
         int action = -1;
 
@@ -87,7 +90,9 @@ public class ClientConnectionSpain implements ClientConnectionInterface {
             break;
         } while (true);
     }
-
+//El método connect va a permitir al cliente seleccionar alguna de las 3 opciones, las cuales son
+ //mostrar el cátalogo, comprar y desconectar, despues de seleccionar una opcion se va a enviar un mensaje
+ // al servidor a través de la conexión.
     public void connect(Connection connection) {
         System.out.println("\n¿Qué te gustaría hacer ahora?\n");
         int action = -1;
@@ -132,7 +137,7 @@ public class ClientConnectionSpain implements ClientConnectionInterface {
                 System.out.println("Por favor ingresa una acción válida.\n");
         }
     }
-
+  //El método ourchaseMode solo va a imprimir el mensaje ¨Entrando al modo de compra¨
     public void purchaseMode() {
         System.out.println("Entrando al modo de compra: \n");
     }
