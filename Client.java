@@ -35,7 +35,29 @@ public class Client implements ClientInterface {
     public Client(String username, String password, String name, Long phoneNumber, 
                     String address, long bankAccount, String country, double money) {
         this.username = username;
-        this.password = password.hashCode();
+        this.password = hash(password);
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.bankAccount = bankAccount;
+        this.country = country;
+        this.money = money;
+    }
+
+    /**
+     * Define el estado inicial del cliente.
+     * @param username el el nombre del usuario
+     * @param password la contraseña del cliente.
+     * @param phoneNUmbre el número de telofóno del cliente.
+     * @param address la contraseña del cliente.
+     * @param bankAccount la cuenta bancaria del cliente
+     * @param country el pais del cliente
+     * @param money el dinero del cliente.
+     */
+    public Client(String username, int password, String name, Long phoneNumber, 
+                    String address, long bankAccount, String country, double money) {
+        this.username = username;
+        this.password = password;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.address = address;
@@ -51,7 +73,7 @@ public class Client implements ClientInterface {
 
     //Define la contraseña del cliente
     public void setPassword(String password) {
-        this.password = password.hashCode();
+        this.password = hash(password);
     }
 
     //Define el nombre del cliente
@@ -118,5 +140,20 @@ public class Client implements ClientInterface {
 //Regresa el dinero del cliente
     public double getMoney() {
         return money;
+    }
+
+    /**
+     * Función de dispersión para contraseñas.
+     * @param str la contraseña.
+     * @return un entero positivo que es la dispersión de la contraseña.
+     */
+    public int hash(String str) {
+        int hash = 5381;
+        
+        for (int i = 0; i < str.length(); i++) {
+            hash = ((hash << 5) + hash) + str.charAt(i);
+        }
+        
+        return hash & 0x7FFFFFFF; // To make sure the result is a positive integer.
     }
 }

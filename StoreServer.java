@@ -14,6 +14,8 @@ public class StoreServer {
     private boolean isRunning;
     private LinkedList<ServerListener> listeners;
     private LinkedList<ProxyClient> clients;
+    private ProxyClient cesar;
+    private ProxyClient ximena;
 
     public StoreServer(int port) throws IOException {
         this.port = port;
@@ -23,12 +25,8 @@ public class StoreServer {
         this.listeners = new LinkedList<>();
         this.database = createDatabase();
         clients = new LinkedList<>();
-        ProxyClient cesar = new ProxyClient(new Client("villegassg", "proyecto1", "César Villegas", Long.parseLong("5591030218"), "Facultad de Ciencias", Long.parseLong("1234567812345678"), "México", 999999));
-        ProxyClient ximena = new ProxyClient(new Client("ximeanluv", "ximena123", "Ximena Andrade", Long.parseLong("1234567890"), "Facultad de Ciencias", Long.parseLong("1234123456785678"), "México", 999999));
-
-        store = new MexicoVirtualStore(database.iterator());
-        store.add(cesar);
-        store.add(ximena);
+        cesar = new ProxyClient(new Client("villegassg", "proyecto1", "César Villegas", Long.parseLong("5591030218"), "Facultad de Ciencias", Long.parseLong("1234567812345678"), "México", 999999));
+        ximena = new ProxyClient(new Client("ximeanluv", "ximena123", "Ximena Andrade", Long.parseLong("1234567890"), "Facultad de Ciencias", Long.parseLong("1234123456785678"), "México", 999999));
     }
 
     public void serve() {
@@ -167,12 +165,24 @@ public class StoreServer {
         writeMessage("The connection %d has been disconnected.\n", port);
     }
 
+    private void createUsers(Connection connection) {
+        country(connection, cesar);
+        country(connection, ximena);
+        if (!clients.contains(cesar))
+            clients.add(cesar);
+
+        if (!clients.contains(ximena))
+            clients.add(ximena);
+    }
+
     private void clientSignIn(Connection connection, String client) {
         String u = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
         String p = client.substring(client.indexOf("Password: ") + "Password: ".length(), client.indexOf("Phone"));
+        int pw = Integer.parseInt(p);
+        createUsers(connection);
         for (ProxyClient c : clients)
             if (c.getUsername().equals(u)) {
-                if (c.getPassword() == p.hashCode()) {
+                if (c.getPassword() == pw) {
                     country(connection, c);
                     try{
                         connection.sendMessage("CONNECT");
@@ -195,8 +205,9 @@ public class StoreServer {
     private void clientSignUp(Connection connection, String client) {
         String u = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
         String p = client.substring(client.indexOf("Password: ") + "Password: ".length(), client.indexOf("Phone number"));
+        int pw = Integer.parseInt(p);
         for (ProxyClient c : clients)
-            if (c.getUsername().equals(u) && c.getPassword() == p.hashCode()) {
+            if (c.getUsername().equals(u) && c.getPassword() == pw) {
                 try {
                     connection.sendMessage("SIGNUP".concat("You've already signed up; " +
                                         "creating the store according to your country anyway...\n"));
@@ -213,7 +224,7 @@ public class StoreServer {
         String c = client.substring(client.indexOf("Country: ") + "Country: ".length(), client.indexOf("Money"));
         String m = client.substring(client.indexOf("Money: ") + "Money: ".length());
 
-        ProxyClient newClient = new ProxyClient(new Client(u, p, n, Long.parseLong(pN), a, 
+        ProxyClient newClient = new ProxyClient(new Client(u, pw, n, Long.parseLong(pN), a, 
                                                 Long.parseLong(b), c, Double.parseDouble(m)));
         clients.add(newClient);
         country(connection, newClient);

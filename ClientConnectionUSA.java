@@ -28,64 +28,64 @@ public class ClientConnectionUSA implements ClientConnectionInterface {
         } catch (NoSuchElementException nsee) {
             
         }
-        do {
-            switch(action) {
-                case 1:
-                    System.out.println("\nPlease enter the name of the product you'd like " +
-                                            "to add to your shopping cart: ");
-                    try {
-                        String product1 = scanner.readLine();
-                        connection.sendMessage("ADDTOCART" + client.toString2() + 
-                                                "Product: " + product1);
-                    } catch(IOException ioe) {
-                        ioe.printStackTrace();
-                    }
-                    break;
-                case 2:
-                    System.out.println("\nPlease enter the name of the product you'd like " +
-                                            "to remove from your shopping cart: ");
-                    try {
-                        String product2 = scanner.readLine();
-                        connection.sendMessage("REMOVEFROMSHOPPINGCART" + 
-                                                client.toString2() +
-                                                "Product: " + product2);
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
-                    }
-                    break;
-                case 3: 
-                    try {
-                        connection.sendMessage("PRINTSHOPPINGCART" + client.toString2());
-                    } catch(IOException ioe) {}
-                    break;
-                case 4: 
-                    try {
-                        connection.sendMessage("PURCHASESHOPPINGCART");
-                    } catch(IOException ioe) {
-                        ioe.printStackTrace();
-                    }
-                    break;
-                case 5 :
-                    System.out.println("\nPlease enter the name of the product you'd like to purchase directly: ");
-                    try {
-                        String product3 = scanner.readLine();
-                        connection.sendMessage("PURCHASE" + "Product: " + product3);
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
-                    }
-                    break;
-                case 6:
-                    System.out.println("\nExiting from the purchase mode.\n");
-                    try {
-                        connection.sendMessage("CONNECT");
-                    } catch (IOException ioe) {}
-                    break;
-                default:
-                    System.out.println("Please enter a valid action.\n");
-                    continue;
-            }   
+        switch(action) {
+            case 1:
+                System.out.println("\nPlease enter the name of the product you'd like " +
+                                        "to add to your shopping cart: ");
+                try {
+                    String product1 = scanner.readLine();
+                    connection.sendMessage("ADDTOCART" + client.toString2() + 
+                                            "Product: " + product1);
+                } catch(IOException ioe) {
+                    ioe.printStackTrace();
+                }
+                break;
+            case 2:
+                System.out.println("\nPlease enter the name of the product you'd like " +
+                                        "to remove from your shopping cart: ");
+                try {
+                    String product2 = scanner.readLine();
+                    connection.sendMessage("REMOVEFROMSHOPPINGCART" + 
+                                            client.toString2() +
+                                            "Product: " + product2);
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+                break;
+            case 3: 
+                try {
+                    connection.sendMessage("PRINTSHOPPINGCART" + client.toString2());
+                } catch(IOException ioe) {}
+                break;
+            case 4: 
+                try {
+                    connection.sendMessage("PURCHASESHOPPINGCART");
+                } catch(IOException ioe) {
+                    ioe.printStackTrace();
+                }
+                break;
+            case 5 :
+                System.out.println("\nPlease enter the name of the product you'd like to purchase directly: ");
+                try {
+                    String product3 = scanner.readLine();
+                    connection.sendMessage("PURCHASE" + "Product: " + product3);
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+                break;
+            case 6:
+                System.out.println("\nExiting from the purchase mode.\n");
+                try {
+                    connection.sendMessage("CONNECT");
+                } catch (IOException ioe) {}
+                break;
+            default:
+            System.out.println("Please enter a valid action.\n");
+            try {
+                connection.sendMessage("OPTIONS");
+            } catch (IOException ioe) {}
             break;
-        } while(true);
+        }
     }
     
 //El método connect va a permitir al cliente seleccionar alguna de las 3 opciones, las cuales son

@@ -234,7 +234,8 @@ public class MexicoVirtualStore implements VirtualStore {
     }
 
     public void add(ProxyClient client) {
-        clients.addFirst(client);
+        if (!clients.contains(client))
+            clients.add(client);
     }
 
     public void remove(ProxyClient client) {

@@ -232,7 +232,8 @@ public class USAVirtualStore implements VirtualStore {
     }
 
     public void add(ProxyClient client) {
-        clients.add(client);
+        if (!clients.contains(client))
+            clients.add(client);
     }
 
     public void remove(ProxyClient client) {
