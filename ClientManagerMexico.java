@@ -64,7 +64,8 @@ public class ClientManagerMexico implements ClientManagerInterface {
             break;
         } while(true);
     }
-
+//El método Client va a recopilar el nombre del cliente y su contraseña desde la entrada estandar
+    //y va a crear un objeyo client.
     public Client signIn() {
         String username = "";
         String password = "";
@@ -88,7 +89,7 @@ public class ClientManagerMexico implements ClientManagerInterface {
     }
 //El método sig Up va a delarar las variables para almacenar la informacion del cliente,
 //así como su nombre, nombre de usuario, contraseña, numero de telefono, numero de cuenta 
-//bancaria, dinero y país
+//bancaria, dinero y país y va a regresar un nuevo Client
     public Client signUp(String country) {
         String name = "";
         String username = "";
