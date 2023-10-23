@@ -57,9 +57,13 @@ public class Connection {
         out.newLine();
         out.flush();
         while(iterator.hasNext()) {
-            out.write("DATABASEREQUESTED".concat(iterator.next().toString()));
-            out.newLine();
-            out.flush();
+            Product p = iterator.next();
+            if (p == null) return;
+            else {
+                out.write("DATABASEREQUESTED".concat(p.toString()));
+                out.newLine();
+                out.flush();
+            }
         }
     }
 

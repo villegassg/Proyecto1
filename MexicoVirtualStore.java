@@ -1,15 +1,18 @@
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Random;
 
 public class MexicoVirtualStore implements VirtualStore {
 
     private LinkedList<ProxyClient> clients;
     private Iterator<Product> iterator;
+    private Random random;
 
     public MexicoVirtualStore(Iterator<Product> iterator) {
         clients = new LinkedList<>();
         this.iterator = iterator;
+        random = new Random();
     }
 
     public String sayHi() {
@@ -117,8 +120,14 @@ public class MexicoVirtualStore implements VirtualStore {
         }
 
         double total = 0;
-        for (Product product : shoppingCart)
-            total += product.getPrice();
+        int offer = random.nextInt(5);
+        for (Product product : shoppingCart) {
+            double price = product.getPrice();
+            if (offer == 3 && product.getDepartment().equals("ALIMENTICIO"))
+                total += price - (price*.3);
+            else 
+                total += product.getPrice();
+        }
 
         double money = proxyClient.getMoney();
 
@@ -133,7 +142,9 @@ public class MexicoVirtualStore implements VirtualStore {
         } else {
             proxyClient.setMoney(money-total);
             proxyClient.setOnRealValues();
-            String success = "¡Compra completada con éxito!.\n";
+            String success = offer == 3 ? "¡Compra con descuento en los productos " +
+                                            "alimenticios completada con éxito!\n" : 
+                                            "¡Compra completada con éxito!.\n";
             try {
                 connection.sendMessage("PURCHASESHOPPINGCART" + success);
             } catch (IOException ioe) {}
@@ -149,7 +160,10 @@ public class MexicoVirtualStore implements VirtualStore {
             return;
         }
 
-        double price = product.getPrice();
+        int offer = random.nextInt(5);
+        double price = offer == 3 && product.getDepartment().equals("ALIMENTICIO") ? 
+                       product.getPrice()-(product.getPrice()*.3) : product.getPrice();
+
         ProxyClient proxyClient = null;
 
         for (ProxyClient proxy : clients) 
@@ -167,7 +181,9 @@ public class MexicoVirtualStore implements VirtualStore {
         } else {
             proxyClient.setMoney(money-price);
             proxyClient.setOnRealValues();
-            String success = "¡Producto comprado con éxito!\n";
+            String success = offer == 3 && product.getDepartment().equals("ALIMENTICIO") ?
+                            "¡Producto alimenticio con descuento comprado con éxito!\n" : 
+                            "¡Producto comprado con éxito!\n";
             try {
                 connection.sendMessage("PURCHASE" + success);
                 return;

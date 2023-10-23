@@ -45,4 +45,16 @@ public class Product {
 
         return n.concat(b).concat(d).concat(p);
     }
+
+    @Override public boolean equals(Object object) {
+        if (!(object instanceof Product))
+            return false;
+
+        Product product = (Product)object;
+
+        return this.name.equals(product.getName()) &&
+                this.barcode == product.getBarcode() &&
+                this.department.equals(product.getDepartment()) &&
+                this.price == product.getPrice();
+    } 
 }

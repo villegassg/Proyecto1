@@ -80,6 +80,7 @@ public class ClientManagerMexico implements ClientManagerInterface {
         Client nuevoCliente = new Client();
         nuevoCliente.setUsername(username);
         nuevoCliente.setPassword(password);
+        nuevoCliente.setCountry("México");
         return nuevoCliente;
     }
 

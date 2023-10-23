@@ -2,15 +2,18 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Random;
 
 public class USAVirtualStore implements VirtualStore {
     
     private LinkedList<ProxyClient> clients;
     private Iterator<Product> iterator;
+    private Random random;
 
     public USAVirtualStore(Iterator<Product> iterator) {
         clients = new LinkedList<>();
         this.iterator = iterator;
+        random = new Random();
     }
 
     public String sayHi() {
@@ -115,8 +118,14 @@ public class USAVirtualStore implements VirtualStore {
         }
 
         double total = 0;
-        for (Product product : shoppingCart)
-            total += product.getPrice();
+        int offer = random.nextInt(5);
+        for (Product product : shoppingCart) {
+            double price = product.getPrice();
+            if (offer == 3 && product.getDepartment().equals("ELECTRONICA"))
+                total += price-(price*.30);
+            else 
+                total += product.getPrice();
+        }
 
         double money = proxyClient.getMoney();
 
@@ -131,7 +140,9 @@ public class USAVirtualStore implements VirtualStore {
         } else {
             proxyClient.setMoney(money-total);
             proxyClient.setOnRealValues();
-            String success = "Purchase completed with success!.\n";
+            String success = offer == 3 ? "Purchase with great disccount on electronics " +
+                                            "completed with success!.\n" : 
+                                            "Purchase completed with success!.\n";
             try {
                 connection.sendMessage("PURCHASESHOPPINGCART" + success);
             } catch (IOException ioe) {}
@@ -148,7 +159,11 @@ public class USAVirtualStore implements VirtualStore {
             return;
         }
 
-        double price = product.getPrice();
+        int offer = random.nextInt(5);
+        double price = offer == 3 && product.getDepartment().equals("ELECTRONICA") ? 
+                        product.getPrice() - (product.getPrice()*.3) : 
+                        product.getPrice();
+
         ProxyClient proxyClient = null;
 
         for (ProxyClient proxy : clients) 
@@ -166,7 +181,9 @@ public class USAVirtualStore implements VirtualStore {
         } else {
             proxyClient.setMoney(money-price);
             proxyClient.setOnRealValues();
-            String success = "Product purchased succesfully!\n";
+            String success = offer == 3 && product.getDepartment().equals("ELECTRONICA") ? 
+                            "Product purchased with great disccount succesfully!" : 
+                            "Product purchased succesfully!\n";
             try {
                 connection.sendMessage("PURCHASE" + success);
                 return;

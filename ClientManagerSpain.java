@@ -81,6 +81,7 @@ public class ClientManagerSpain implements ClientManagerInterface{
         Client nuevoCliente = new Client();
         nuevoCliente.setUsername(username);
         nuevoCliente.setPassword(password);
+        nuevoCliente.setCountry("España");
         return nuevoCliente;
     }
 

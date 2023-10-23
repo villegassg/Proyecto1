@@ -213,7 +213,7 @@ public class StoreServer {
         Product producto = null;
         while (iterator.hasNext()) {
             Product next = iterator.next();
-            if (next.getName().equals(product))
+            if (next != null && next.getName().equals(product))
                 producto = next;
         }
         store.addToCart(connection, n, producto);
@@ -229,7 +229,7 @@ public class StoreServer {
         Product producto = null;
         while (iterator.hasNext()) {
             Product next = iterator.next();
-            if (next.getName().equals(product))
+            if (next != null && next.getName().equals(product))
                 producto = next;
         }
         store.removeFromCart(connection, n, producto);
@@ -263,7 +263,7 @@ public class StoreServer {
         Product producto = null;
         while (iterator.hasNext()) {
             Product next = iterator.next();
-            if (next.getName().equals(product))
+            if (next != null && next.getName().equals(product))
                 producto = next;
         }
         store.purchase(connection, n, producto);
@@ -327,11 +327,104 @@ public class StoreServer {
 
     public Database createDatabase() {
         Database dataB = new Database();
-        // Aquí llenamos la base de datos con todos los productos a vender :)
-        Product a = new Product("a", 123, "A", 500);
-        Product b = new Product("b", 456, "B", 200);
-        dataB.addProduct(a);
-        dataB.addProduct(b);
+        
+        Product audifonos = new Product("Earpods", 121, "ELECTRONICA", 500);
+        Product cargadorcompu = new Product("Cargador de computadora", 122, "ELECTRONICA", 786);
+        Product television = new Product("Televisión", 123, "ELECTRONICA", 387);
+        Product bocina = new Product("Bocina", 124, "ELECTRONICA", 1678);
+        Product laptop = new Product("Laptop", 125, "ELECTRONICA", 897);
+        Product Cargador = new Product("Multicontacto", 126, "ELECTRONICA", 984);
+        Product amplificador = new Product("Amplificador WIFI", 127, "ELECTRONICA", 1200);
+        Product monitor = new Product("Monitor Gamer", 128, "ELECTRONICA", 24000);
+        Product teclado = new Product("Teclado Gamer", 129, "ELECTRONICA",1094);
+        Product telefono = new Product("Apple iPhone 15", 1210, "ELECTRONICA", 2097);
+        Product tablet = new Product("Ipad", 1211, "ELECTRONICA", 3908);
+        Product juego = new Product("Xbox 360", 1212, "ELECTRONICA", 948);
+        Product alexa = new Product("Bocina inteligente Alexa", 1213, "ELECTRONICA", 2294);
+        Product computadora = new Product("Computadora", 1214, "ELECTRONICA", 1755);
+        Product bafle = new Product("Bafle", 1215, "ELECTRONICA", 2000);
+
+        Product licuadora = new Product("Licuadora", 451, "ELECTRODOMESTICO", 560);
+        Product closet = new Product("Clóset inteligente", 452, "ELECTRODOMESTICO", 19905);
+        Product Apiradora = new Product("Aspiradora", 453, "ELECTRODOMESTICO", 797);
+        Product Horno = new Product("Horno", 454, "ELECTRODOMESTICO", 13089);
+        Product microondas = new Product("Microondas", 455, "ELECTRODOMESTICO", 1989);
+        Product cafetera = new Product("Cafetera", 456, "ELECTRODOMESTICO", 2456);
+        Product tostadora = new Product("Tostadora", 457, "ELECTRODOMESTICO", 891);
+        Product batidora = new Product("Batidora", 458, "ELECTRODOMESTICO", 7075);
+        Product swandichera = new Product("Sandwichera", 459, "ELECTRODOMESTICO", 794);
+        Product plancha = new Product("Plancha", 4510, "ELECTRODOMESTICO", 687);
+        Product molino = new Product("Molino de carne", 4511, "ELECTRODOMESTICO", 2531);
+        Product extractor = new Product("Extractor de jugos", 4512, "ELECTRODOMESTICO", 3599);
+        Product estufa = new Product("Estufa", 4513, "ELECTRODOMESTICO", 2198);
+        Product planchaca = new Product("Plancha para el cabello", 4514, "ELECTRODOMESTICO", 1988);
+
+        Product boing = new Product("Boing", 211, "ALIMENTICIO", 80);
+        Product leche = new Product("Leche", 212, "ALIMENTICIO", 250);
+        Product yoghurt = new Product("Yoghurt", 213, "ALIMENTICIO", 329);
+        Product chile = new Product("Chile pasilla", 214, "ALIMENTICIO", 20);
+        Product pepino = new Product("Pepino", 215, "ALIMENTICIO", 40);
+        Product queso = new Product("Queso manchego", 216, "ALIMENTICIO", 139);
+        Product salchica = new Product("Salchichas San Rafael", 217, "ALIMENTICIO", 298);
+        Product jamon = new Product("Jamón", 218, "ALIMENTICIO", 146);
+        Product cereal = new Product("Zucaritas", 219, "ALIMENTICIO", 100);
+        Product fresas = new Product("Fresas", 2110, "ALIMENTICIO", 110);
+        Product danonino = new Product("Danonino", 2111, "ALIMENTICIO", 213);
+        Product tostadas = new Product("Tostadas", 2112, "ALIMENTICIO", 76);
+        Product gelatina = new Product("Gelatinas", 2113, "ALIMENTICIO", 99);
+        Product azucar = new Product("Azucar", 2114, "ALIMENTICIO", 199);
+        Product huevo = new Product("Huevo", 2115, "ALIMENTICIO", 299);
+
+        dataB.addProduct(audifonos);
+        dataB.addProduct(laptop);
+        dataB.addProduct(television);
+        dataB.addProduct(bocina);
+        dataB.addProduct(Cargador);
+        dataB.addProduct(amplificador);
+        dataB.addProduct(monitor);
+        dataB.addProduct(teclado);
+        dataB.addProduct(telefono);
+        dataB.addProduct(tablet);
+        dataB.addProduct(juego);
+        dataB.addProduct(alexa);
+        dataB.addProduct(computadora);
+        dataB.addProduct(cargadorcompu);
+        dataB.addProduct(bafle);
+
+
+        dataB.addProduct(licuadora);
+        dataB.addProduct(closet);
+        dataB.addProduct(Apiradora);
+        dataB.addProduct(Horno);
+        dataB.addProduct(microondas);
+        dataB.addProduct(cafetera);
+        dataB.addProduct(tostadora);
+        dataB.addProduct(batidora);
+        dataB.addProduct(swandichera);
+        dataB.addProduct(plancha);
+        dataB.addProduct(molino);
+        dataB.addProduct(extractor);
+        dataB.addProduct(planchaca);
+        dataB.addProduct(estufa);
+
+
+
+        dataB.addProduct(boing);
+        dataB.addProduct(leche);
+        dataB.addProduct(yoghurt);
+        dataB.addProduct(chile);
+        dataB.addProduct(pepino);
+        dataB.addProduct(queso);
+        dataB.addProduct(salchica);
+        dataB.addProduct(jamon);
+        dataB.addProduct(cereal);
+        dataB.addProduct(fresas);
+        dataB.addProduct(danonino);
+        dataB.addProduct(tostadas);
+        dataB.addProduct(gelatina);
+        dataB.addProduct(azucar);
+        dataB.addProduct(huevo);
+
         return dataB;
     }
 }
