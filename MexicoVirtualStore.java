@@ -4,23 +4,29 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
+//La clase MexicoVirtualStore implementa a VirtualStore
 public class MexicoVirtualStore implements VirtualStore {
 
-    private LinkedList<ProxyClient> clients;
+//Creamos una lista privada del objeto ProxyCLient creando una variable clients
+private LinkedList<ProxyClient> clients;
+    //Creamos una variable iterator del tipo Iterator pasandole como parametro el objeto Product
     private Iterator<Product> iterator;
+    //Creamos una variable random del tipo Random
     private Random random;
-
+//Creamos un constructor para inicializar una instancia de la clase MexicoVirtualStore
+    //La cual va a tener una lista de clientes via y un iterador de productos
     public MexicoVirtualStore(Iterator<Product> iterator) {
         clients = new LinkedList<>();
         this.iterator = iterator;
         random = new Random();
     }
 
+    //El metodo sayHi regresa una cadena de texto 
     public String sayHi() {
         return "¡Bienvenido a la Tienda Virtual Mexicana! " +
                             "¡Tenemos muchísimas cosas para ofrecerte!\n";
     }
-
+//EL método options del tipo String regresa el menú de opciones 
     public String options() {
         String options = "Por favor ingresa la acción que quieras hacer: \t" +
                         "1. Añadir al carrito \t" +
@@ -31,7 +37,7 @@ public class MexicoVirtualStore implements VirtualStore {
                         "6. Salir \n";
         return options;
     }
-
+//El metodo addCart va a permitirle al cliente agregar los productos a su carrito de compras.
     public void addToCart(Connection connection, String name, Product product) {
         if (product == null) {
             String fail = "Lo sentimos, ha ocurrido un error al tratar de agregar el producto " +
@@ -51,7 +57,7 @@ public class MexicoVirtualStore implements VirtualStore {
             connection.sendMessage("ADDEDTOCART" + success);
         } catch (IOException ioe) {}
     }
-
+//El metodo removeFromCart va a permitirle al cliente eliminar los productos a su carrito de compras.
     public void removeFromCart(Connection connection, String name, Product product) {
         if (product == null) {
             String fail = "Error al tratar de eliminar el producto de tu carrito porque " +
@@ -80,7 +86,7 @@ public class MexicoVirtualStore implements VirtualStore {
             connection.sendMessage("REMOVEFROMSHOPPINGCART" + success);
         } catch(IOException ioe) {}
     }
-
+//El método printShoppingCart imprime la informacion del carrito de compras del cliente
     public void printShoppingCart(Connection connection, String name) {
         ProxyClient client = null;
         for (ProxyClient proxy : clients) 
@@ -109,7 +115,7 @@ public class MexicoVirtualStore implements VirtualStore {
             connection.sendMessage("PRINTSHOPPINGCART" + sc);
         } catch (IOException ioe) {}
     }
-
+//El metodo purchaseShoppingCart le va a permitir al cliente comprar su carrito de compras
     public void purchaseShoppingCart(Connection connection, String name, long bankAccount) {
         LinkedList<Product> shoppingCart = new LinkedList<>();
         ProxyClient proxyClient = null;
@@ -170,7 +176,7 @@ public class MexicoVirtualStore implements VirtualStore {
             proxyClient.clearShoppingCart();
         }
     }
-
+//El metodo purchase le permite al cliente comprar el producto sin necesidad de agregarlo al carrito
     public void purchase(Connection connection, Product product, String name, long bankAccount) {
         if (product == null) {
             String fail = "Error al tratar de comprar el producto porque escribiste mal su nombre.\n";
@@ -221,27 +227,28 @@ public class MexicoVirtualStore implements VirtualStore {
             } catch(IOException ioe) {}
         }
     } 
-
+//El metodo deliveryDate le va a indicar al cliente cuando se le va a entregar su compra
     public String deliveryDate() {
         LocalDate date = LocalDate.now();
         String deliveryDate = "Tu orden te llegará el: " + 
                                 date.plusWeeks(2).toString() + ".\n";
         return deliveryDate;
     }
-
+//El metodo goodBye va a imprimir un mensaje de texto para el cliente
     public void goodBye() {
         System.out.println("¡Muchas gracias por habernos visitado! ¡Hasta la próxima!\n");
     }
-
+//El metodo add va agergar a los clientes en una lista propia de la tienda 
     public void add(ProxyClient client) {
         if (!clients.contains(client))
             clients.add(client);
     }
-
+//El metodo remove va a eliminar a los clientes de la lista propia de la tienda
     public void remove(ProxyClient client) {
         clients.remove(client);
     }
 
+//El metodo products va a recorrer la lista de los productos utilizando un iterador.
     public void products() {
         while (iterator.hasNext()) {
             Product product = iterator.next();
