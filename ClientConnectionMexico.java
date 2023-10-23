@@ -91,7 +91,9 @@ public class ClientConnectionMexico implements ClientConnectionInterface {
             break;
         } while (true);
     }
-
+//El método connect va a permitir al cliente seleccionar alguna de las 3 opciones, las cuales son
+ //mostrar el cátalogo, comprar y desconectar, despues de seleccionar una opcion se va a enviar un mensaje
+ // al servidor a través de la conexión.
     public void connect(Connection connection) {
         System.out.println("\n¿Qué quieres hacer ahora?\n");
         int action = -1;
@@ -136,6 +138,7 @@ public class ClientConnectionMexico implements ClientConnectionInterface {
                 System.out.println("Por favor ingresa una acción válida.\n");
         }
     }
+  //El método ourchaseMode solo va a imprimir el mensaje ¨Entrando al modo de compra¨
 
     public void purchaseMode() {
         System.out.println("Entrando al modo de compra: \n");
