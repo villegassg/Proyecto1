@@ -151,12 +151,20 @@ public class StoreServer {
         String u = client.substring(client.indexOf("Username: ") + "Username: ".length(), client.indexOf("Password"));
         String p = client.substring(client.indexOf("Password: ") + "Password: ".length(), client.indexOf("Phone number"));
         for (ProxyClient c : clients)
-            if (c.getUsername().equals(u) && c.getPassword() == p.hashCode()) {
-                country(connection, c);
-                try{
-                    connection.sendMessage("CONNECT");
-                } catch (IOException ioe) {}
-                return;
+            if (c.getUsername().equals(u)) {
+                if (c.getPassword() == p.hashCode()) {
+                    country(connection, c);
+                    try{
+                        connection.sendMessage("CONNECT");
+                    } catch (IOException ioe) {}
+                    return;
+                } else {
+                    try {
+                        connection.sendMessage("DISCONNECT" + "Incorrect password. Now we'll " +
+                                                "have to finish your connection to the server " +
+                                                "in order to preserve the security of the store.\n");
+                    } catch (IOException ioe) {}
+                }
             }
         
         try {
