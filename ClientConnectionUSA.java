@@ -1,14 +1,14 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.NoSuchElementException;
-//La clase ClientConnectionMexico va a implementar la clase ClinetConnectionInterface
+//La clase ClientConnectionUSA va a implementar la clase ClinetConnectionInterface
 public class ClientConnectionUSA implements ClientConnectionInterface {
     //Declaramos una variable cliente del tipoProxyClient
     ProxyClient client;
        //Declararemos una llada scanner del tipo BufferedReader
     BufferedReader scanner;
 
-    //El constructor ClientConnectionMexico va inicializar dos objetos ProxyCLient y BuggerdReader
+    //El constructor ClientConnectionUSA va inicializar dos objetos ProxyCLient y BuggerdReader
     public ClientConnectionUSA(ProxyClient client, BufferedReader in) {
         this.client = client;
         this.scanner = in;
