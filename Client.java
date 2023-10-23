@@ -19,14 +19,18 @@ public class Client implements ClientInterface {
     //Dinero con el que cuenta el cliente
     private double money;
 
+    //Clase cliente
     public Client() {}
     
     /**
      * Define el estado inicial del cliente.
-     * @param username el .
-     * @param cuenta el número de cuenta del estudiante.
-     * @param promedio el promedio del estudiante.
-     * @param edad la edad del estudiante.
+     * @param username el el nombre del usuario
+     * @param password la contraseña del cliente.
+     * @param phoneNUmbre el número de telofóno del cliente.
+     * @param address la contraseña del cliente.
+     *@param bankAccount la cuenta bancaria del cliente
+     *@param country el pais del cliente
+     *@param money el dinero del cliente.
      */
     public Client(String username, String password, String name, Long phoneNumber, 
                     String address, long bankAccount, String country, double money) {
@@ -40,66 +44,78 @@ public class Client implements ClientInterface {
         this.money = money;
     }
 
+    //Define el nonbre de usuario del cliente
     public void setUsername(String username) {
         this.username = username;
     }
 
+    //Define la contraseña del cliente
     public void setPassword(String password) {
         this.password = password.hashCode();
     }
 
+    //Define el nombre del cliente
     public void setName(String name) {
         this.name = name;
     }
 
+   //Define el número telefónico del cliente
     public void setPhoneNumber(long phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
+   //Define la contraseña del cliente
     public void setAddress(String address) {
         this.address = address;
     }
 
+   //Define la cuenta bancaria del cliente
     public void setBankAccount(long bankAccount) {
         this.bankAccount = bankAccount;
     }
 
+    //Define el país del cliente
     public void setCountry(String country) {
         this.country = country;
     }
 
+   //Define el dinero del cliente
     public void setMoney(double money) {
         this.money = money;
     }
 
+   //Regresa el nombre de usuario del cliente
     public String getUsername() {
         return username;
     }
 
+    //Regresa la contraseña del cliente
     public int getPassword() {
         return password;
     }
 
+   //Regresa el nombre del cliente
     public String getName() {
         return name;
     }
 
+   //Regresa el número telefónico del cliente
     public long getPhoneNumber() {
         return phoneNumber;
     }
-
+//Regresa la contraseña del cliente
     public String getAddress() {
         return address;
     }
-
+//Regresa la cuenta bancaria del cliente
     public long getBankAccount() {
         return bankAccount;
     }
-
+//Regresa el país del cliente
     public String getCountry() {
         return country;
     }
-
+//Regresa el dinero del cliente
     public double getMoney() {
         return money;
     }
