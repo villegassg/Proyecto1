@@ -4,9 +4,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
+//La clase MexicoVirtualStore implementa a VirtualStore
 public class MexicoVirtualStore implements VirtualStore {
 
-    private LinkedList<ProxyClient> clients;
+    
+private LinkedList<ProxyClient> clients;
     private Iterator<Product> iterator;
     private Random random;
 
