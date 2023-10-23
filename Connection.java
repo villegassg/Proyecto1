@@ -3,17 +3,12 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 
 public class Connection {
 
-    private Iterator<Product> iterator;
     private BufferedReader in;
     private BufferedWriter out;
     private Socket socket;
-    private ClientConnection clientConnection;
     private boolean isActive;
     private LinkedList<ConnectionListener> listeners;
 
@@ -53,19 +48,23 @@ public class Connection {
             out.flush();
         } catch (IOException ioe) {
             throw new IOException("It's been ocurred an error during the send of the " +
-                                    "message \"" + message.toString() + "\"");
+                                    "message \"" + message + "\"");
         }
     }
 
-    public void sendDatabase(Iterator<Product> iterator) throws IOException {
+    public void sendDatabase(VirtualStore store, Iterator<Product> iterator) throws IOException {
+        out.write(store.sayHi());
+        out.newLine();
+        out.flush();
         while(iterator.hasNext()) {
-            out.write(iterator.next().toString());
-            out.newLine();
-            out.flush();
+            Product p = iterator.next();
+            if (p == null) return;
+            else {
+                out.write("DATABASEREQUESTED".concat(p.toString()));
+                out.newLine();
+                out.flush();
+            }
         }
-        
-        for (ConnectionListener listener : listeners) 
-                listener.receivedMessage(this, "DATABASERECEIVED");
     }
 
     public void disconect() {

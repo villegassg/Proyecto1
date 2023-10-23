@@ -1,7 +1,7 @@
 public class Client implements ClientInterface {
 
     private String username;
-    private String password;
+    private int password;
     private String name; 
     private long phoneNumber;
     private String address;
@@ -14,7 +14,7 @@ public class Client implements ClientInterface {
     public Client(String username, String password, String name, Long phoneNumber, 
                     String address, long bankAccount, String country, double money) {
         this.username = username;
-        this.password = password;
+        this.password = password.hashCode();
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.address = address;
@@ -28,7 +28,7 @@ public class Client implements ClientInterface {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = password.hashCode();
     }
 
     public void setName(String name) {
@@ -59,7 +59,7 @@ public class Client implements ClientInterface {
         return username;
     }
 
-    public String getPassword() {
+    public int getPassword() {
         return password;
     }
 

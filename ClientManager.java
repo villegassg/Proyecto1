@@ -1,80 +1,45 @@
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.Socket;
+import java.io.InputStreamReader;
 
 public class ClientManager {
 
     public static void main(String[] args) {
-        System.out.println("Welcome to the best online Store!\n Please enter the action you want to execute.\n");
-        Scanner scanner = new Scanner(System.in);
-        int action = -1;
-        Client client = new Client();
-
-        do {
-            System.out.println("These are the actions you can do:\n" +
-                                "1. Sign in\n" +
-                                "2. Sign up\n" +
-                                "0. Disconnect\n\n");
-            try {
-                action = Integer.parseInt(scanner.next());
+        System.out.println("Welcome to the best online Store! \n");
+        BufferedReader in = 
+            new BufferedReader(
+                new InputStreamReader(System.in));
+        
+        int language = -1;
+        while (true) {
+            System.out.println("Please enter the language you want. (Remember that whatever " +
+                                "the language you pick is, it is gonna be the place where you " +
+                                "want to visit the store) \n\n" +
+                                "1. English \n" +
+                                "2. Español de México \n" +
+                                "3. Español de España \n");
+            try { 
+                language = Integer.parseInt(in.readLine());
+                break;
             } catch (NumberFormatException nfe) {
                 System.out.println("Please enter a valid number.\n");
-                continue;
-            } 
-            switch(action) {
-                case 0 : 
-                    System.out.println("Thank you for your time :). We hope you're visiting us again!\n");
-                    System.exit(0);
-                    break;
-                case 1 : 
-                    client = signIn(scanner);
-                    break;
-                case 2: 
-                    client = signUp(scanner);
-                    break;
-                default: 
-                    System.out.println("Please enter a valid number.\n");
-                    continue;
-            }
-            break;
-        } while(true);
-        try {
-            Socket socket = new Socket("localhost", 1234);
-            ClientConnection clientConnection = new ClientConnection(socket, client);
-            clientConnection.connect();
-        } catch (IOException ioe) {}
-        
-        //scanner.close();
-    }
+            } catch (IOException ioe) {}
+        }
+        ClientManagerInterface client;
 
-    private static Client signIn(Scanner scanner) {
-        String username = "";
-        String password = "";
-        
-        System.out.printf("\n\nPlease enter your username: ");
-        username = scanner.next();
-        System.out.printf("\n\nNow please enter your password: ");
-        password = scanner.next();
-        
-        Client nuevoCliente = new Client();
-        nuevoCliente.setUsername(username);
-        nuevoCliente.setPassword(password);
-        return nuevoCliente;
-    }
-
-    private static Client signUp(Scanner scanner) {
-        String name = "";
-        String username = "";
-        String password = "";
-        
-        System.out.printf("\n\nPlease enter your name (It doesn't need to be full name): ");
-        name = scanner.next();
-        System.out.printf("\n\nPlease enter your username: ");
-        username = scanner.next();
-        System.out.printf("\n\nNow please enter your password: ");
-        password = scanner.next();
-
-        return new Client();
+        switch(language) {
+            case 1: 
+                client = new ClientManagerUSA(in);
+                client.logIn("USA");
+                break;
+            case 2:
+                client = new ClientManagerMexico(in);
+                client.logIn("México");
+                break;
+            case 3:
+                client = new ClientManagerSpain(in);
+                client.logIn("España");
+                break;
+        }
     }
 }
