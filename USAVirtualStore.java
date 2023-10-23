@@ -143,8 +143,10 @@ public class USAVirtualStore implements VirtualStore {
             String success = offer == 3 ? "Purchase with great disccount on electronics " +
                                             "completed with success!.\n" : 
                                             "Purchase completed with success!.\n";
+            String delivery = deliveryDate();
             try {
                 connection.sendMessage("PURCHASESHOPPINGCART" + success);
+                connection.sendMessage("DELIVERY" + delivery);
             } catch (IOException ioe) {}
         }
     }
@@ -184,8 +186,10 @@ public class USAVirtualStore implements VirtualStore {
             String success = offer == 3 && product.getDepartment().equals("ELECTRONICA") ? 
                             "Product purchased with great disccount succesfully!" : 
                             "Product purchased succesfully!\n";
+            String delivery = deliveryDate();
             try {
                 connection.sendMessage("PURCHASE" + success);
+                connection.sendMessage("DELIVERY" + delivery);
                 return;
             } catch(IOException ioe) {}
         }
@@ -196,10 +200,6 @@ public class USAVirtualStore implements VirtualStore {
         String deliveryDate = "Your order will be delivered on: " + 
                                 date.plusWeeks(2).toString() + ".\n";
         return deliveryDate;
-    }
-
-    public void sendOffers() {
-
     }
 
     public void goodBye() {

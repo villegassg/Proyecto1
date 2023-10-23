@@ -16,8 +16,6 @@ public interface VirtualStore {
 
     public String deliveryDate();
 
-    public void sendOffers();
-
     public void goodBye();
 
     public void add(ProxyClient client);

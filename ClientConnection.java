@@ -76,6 +76,9 @@ public class ClientConnection {
             } else if (message.startsWith("PURCHASE")) {
                 String success = message.substring("PURCHASE".length());
                 System.out.println(success);
+            } else if (message.startsWith("DELIVERY")) {
+                String delivery = message.substring("DELIVERY".length());
+                System.out.println(delivery);
             } else if (message.startsWith("DISCONNECT")) {
                 String m = message.substring("DISCONNECT".length());
                 System.out.println(m + "\n");

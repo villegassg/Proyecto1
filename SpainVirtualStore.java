@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
@@ -145,8 +146,10 @@ public class SpainVirtualStore implements VirtualStore {
             proxyClient.setOnRealValues();
             String success = offer == 3 ? "¡Compra con descuento en electrodomésticos completada " +
                                             "con éxito!.\n" : "¡Compra completada con éxito!.\n";
+            String delivery = deliveryDate();
             try {
                 connection.sendMessage("PURCHASESHOPPINGCART" + success);
+                connection.sendMessage("DELIVERY" + delivery);
             } catch (IOException ioe) {}
         }
     }
@@ -186,20 +189,20 @@ public class SpainVirtualStore implements VirtualStore {
             String success = offer == 3 && product.getDepartment().equals("ELECTRODOMESTICO") ? 
                                 "¡Producto electrodoméstico con descuento comprado con éxito!\n" : 
                                 "¡Producto comprado con éxito!\n";
+            String delivery = deliveryDate();
             try {
                 connection.sendMessage("PURCHASE" + success);
+                connection.sendMessage("DELIVERY" + delivery);
                 return;
             } catch(IOException ioe) {}
         }
     } 
 
     public String deliveryDate() {
-        String deliveryDate = "";
+        LocalDate date = LocalDate.now();
+        String deliveryDate = "Tu orden será entregada en: " + 
+                                date.plusWeeks(2).toString() + ".\n";
         return deliveryDate;
-    }
-
-    public void sendOffers() {
-        
     }
 
     public void goodBye() {
