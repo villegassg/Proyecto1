@@ -1,15 +1,15 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.Socket;
-
+//La calse ClientManagerUSA va a implementar ClientManagerInterface
 public class ClientManagerUSA implements ClientManagerInterface{
-
+//Declaramos una variable in del tipo BufferReader
     BufferedReader in;
-
+//El constructor ClientManagerUSA va a inicializar un onjeto BufferedReader
     public ClientManagerUSA(BufferedReader in) {
         this.in = in;
     }
-    
+     //El método logIn va a iniciar la sesión y registro del cliente en la tienda.
     public void logIn(String country) {
         System.out.println("Welcome to the best online Store!\n Please enter the action you want to execute.\n");
         
@@ -60,7 +60,8 @@ public class ClientManagerUSA implements ClientManagerInterface{
             break;
         } while(true);
     }
-
+//El método Client va a recopilar el nombre del cliente y su contraseña desde la entrada estandar
+    //y va a crear un objeyo client.
     public Client signIn() {
         String username = "";
         String password = "";
@@ -81,7 +82,9 @@ public class ClientManagerUSA implements ClientManagerInterface{
         nuevoCliente.setCountry("USA");
         return nuevoCliente;
     }
-
+//El método sig Up va a delarar las variables para almacenar la informacion del cliente,
+//así como su nombre, nombre de usuario, contraseña, numero de telefono, numero de cuenta 
+//bancaria, dinero y país
     public Client signUp(String country) {
         String name = "";
         String username = "";
