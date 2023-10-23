@@ -3,7 +3,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Iterator;
 import java.util.LinkedList;
-
+//Clase connection, vamos a definir la conexión que va obtener el cliente
 public class Connection {
 
     private BufferedReader in;
@@ -11,7 +11,9 @@ public class Connection {
     private Socket socket;
     private boolean isActive;
     private LinkedList<ConnectionListener> listeners;
-
+    
+    //Este constructor va a crear una instancia de la clase Connection la cual va a representar la 
+    //conexión a través de un socket, la cual va marcar la conexión activa.
     public Connection(Socket socket) throws IOException {
         this.socket = socket;
         this.listeners = new LinkedList<>();
@@ -19,7 +21,8 @@ public class Connection {
         this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         isActive = true;
     }
-
+// El metodo receiveMessages se va a encargar de recibir los mensajes de entrada y notificar a los
+    //oyentes ¨ConnectionListener¨ sobre los mensajes que se han recibido.
     public void receiveMessages() {
         try {
             String read;
@@ -41,6 +44,7 @@ public class Connection {
             listener.receivedMessage(this, "DISCONNECT");
     }
 
+    //El método sendMessage va a enviar los mensajes a través de una conexión
     public void sendMessage(String message) throws IOException {
         try {
             out.write(message);
@@ -51,7 +55,9 @@ public class Connection {
                                     "message \"" + message + "\"");
         }
     }
-
+    
+//EL método sendDatabase utiliza los datos de la tiendavirtual y sus productos a través de una conexión
+    //de salida.
     public void sendDatabase(VirtualStore store, Iterator<Product> iterator) throws IOException {
         out.write(store.sayHi());
         out.newLine();
@@ -66,7 +72,7 @@ public class Connection {
             }
         }
     }
-
+//Desconecta la Conexión
     public void disconect() {
         isActive = false;
         try {
@@ -75,6 +81,7 @@ public class Connection {
         } catch (IOException ioe) {}
     }
 
+    //Regresa si la conexión esta activa
     public boolean isActive() {
         return isActive;
     }
