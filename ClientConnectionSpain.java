@@ -8,7 +8,7 @@ public class ClientConnectionSpain implements ClientConnectionInterface {
      //Declararemos una llada scanner del tipo BufferedReader
     BufferedReader scanner;
      
-    //El constructor ClientConnectionMexico va inicializar dos objetos ProxyCLient y BuggerdReader
+    //El constructor ClientConnectionSpain va inicializar dos objetos ProxyCLient y BuggerdReader
     public ClientConnectionSpain(ProxyClient client, BufferedReader in) {
         this.client = client;
         this.scanner = in;
