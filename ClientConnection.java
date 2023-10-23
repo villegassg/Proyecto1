@@ -2,14 +2,23 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.Socket;
 
+/*Clase conexión con el cliente. La conexión del cliente tiene una conexión, un cliente, 
+*saber si esta conectado y conexión con el cliente.
+*/
 public class ClientConnection {
-    
+    //Conexión del cliente
     private Connection connection;
+    //Cliente
     private ProxyClient client;
+    //Saber si esta conectado el cliente
     private boolean isConnected;
+    //Conexión con el cliente
     private ClientConnectionInterface clientConnection;
+    //Un lector de carácteres
     private BufferedReader in;
 
+    //Se inicializa la instancia de ClientConnection para poder administrar y dirigir una conexión
+    //de red, así mismo inica un hilo para recibir los mensajes en segundo plano.
     public ClientConnection(BufferedReader in, Socket socket, ProxyClient client) {
         try {
             this.connection = new Connection(socket);
@@ -25,6 +34,9 @@ public class ClientConnection {
         countryConnection(client.getCountry());
     }
 
+    // El método receivedMessage va a procesar mensajes que va arecibir a travez de una conexión de red
+    // dependiendo del mensaje recibido, ete se va a imprimir en la consola, entre otras acciones específicas
+    //para cada tipo de mensaje.
     public void receivedMessage(Connection connection, String message) {
         if(isConnected) {
             if (message.startsWith("SIGNUP")) {
@@ -95,7 +107,9 @@ public class ClientConnection {
             }
         }
     }
-
+    
+// El método database va a recibir una cadena de texto como argumento, y esta solo va a imprimir
+    //el contenido de este mensaje por una salida estandar.
     public void database(String message) {
         System.out.println(message);
     }
@@ -114,6 +128,9 @@ public class ClientConnection {
         }
     }
 
+    //El método signIn va a envíar un mensaje que va a iniciar la sesíon a través de una conexión de red
+    //utilizando un objeto del parametro connection.
+
     public void signIn() {
         String signIn = "SIGNIN".concat(client.toString2());
         
@@ -123,6 +140,8 @@ public class ClientConnection {
             System.out.println("Could not sign in.\n");
         }
     }
+   //El método signUp va a envíar un mensaje que va a cerrar la sesíon a través de una conexión de red
+    //utilizando un objeto del parametro connection.
 
     public void signUp() {
         try {
